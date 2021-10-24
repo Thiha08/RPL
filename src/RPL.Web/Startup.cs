@@ -34,7 +34,7 @@ namespace RPL.Web
 
             string connectionString = Configuration.GetConnectionString("SqliteConnection");  //Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext(connectionString);
+            //services.AddDbContext(connectionString);
 
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();

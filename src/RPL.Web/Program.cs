@@ -20,7 +20,7 @@ namespace RPL.Web
 
                 try
                 {
-                    var context = services.GetRequiredService<AppDbContext>();
+                    var context = services.GetRequiredService<MainDbContext>();
                     //                    context.Database.Migrate();
                     context.Database.EnsureCreated();
                     SeedData.Initialize(services);

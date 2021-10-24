@@ -9,9 +9,9 @@ namespace RPL.IntegrationTests.Data
 {
     public abstract class BaseEfRepoTestFixture
     {
-        protected AppDbContext _dbContext;
+        protected MainDbContext _dbContext;
 
-        protected static DbContextOptions<AppDbContext> CreateNewContextOptions()
+        protected static DbContextOptions<MainDbContext> CreateNewContextOptions()
         {
             // Create a fresh service provider, and therefore a fresh
             // InMemory database instance.
@@ -21,7 +21,7 @@ namespace RPL.IntegrationTests.Data
 
             // Create a new options instance telling the context to use an
             // InMemory database and the new service provider.
-            var builder = new DbContextOptionsBuilder<AppDbContext>();
+            var builder = new DbContextOptionsBuilder<MainDbContext>();
             builder.UseInMemoryDatabase("cleanarchitecture")
                    .UseInternalServiceProvider(serviceProvider);
 
@@ -33,7 +33,7 @@ namespace RPL.IntegrationTests.Data
             var options = CreateNewContextOptions();
             var mockMediator = new Mock<IMediator>();
 
-            _dbContext = new AppDbContext(options, mockMediator.Object);
+            _dbContext = new MainDbContext(options, mockMediator.Object);
             return new EfRepository<Project>(_dbContext);
         }
     }

@@ -28,8 +28,8 @@ namespace RPL.Web
 
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var dbContext = new AppDbContext(
-                serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>(), null))
+            using (var dbContext = new MainDbContext(
+                serviceProvider.GetRequiredService<DbContextOptions<MainDbContext>>(), null))
             {
                 // Look for any TODO items.
                 if (dbContext.ToDoItems.Any())
@@ -42,7 +42,7 @@ namespace RPL.Web
 
             }
         }
-        public static void PopulateTestData(AppDbContext dbContext)
+        public static void PopulateTestData(MainDbContext dbContext)
         {
             foreach (var item in dbContext.ToDoItems)
             {

@@ -34,7 +34,7 @@ namespace RPL.FunctionalTests
             using (var scope = serviceProvider.CreateScope())
             {
                 var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<AppDbContext>();
+                var db = scopedServices.GetRequiredService<MainDbContext>();
 
                 var logger = scopedServices
                     .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
@@ -67,7 +67,7 @@ namespace RPL.FunctionalTests
                     // Remove the app's ApplicationDbContext registration.
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType ==
-                            typeof(DbContextOptions<AppDbContext>));
+                            typeof(DbContextOptions<MainDbContext>));
 
                     if (descriptor != null)
                     {
@@ -78,7 +78,7 @@ namespace RPL.FunctionalTests
                     string inMemoryCollectionName = Guid.NewGuid().ToString();
 
                     // Add ApplicationDbContext using an in-memory database for testing.
-                    services.AddDbContext<AppDbContext>(options =>
+                    services.AddDbContext<MainDbContext>(options =>
                     {
                         options.UseInMemoryDatabase(inMemoryCollectionName);
                     });

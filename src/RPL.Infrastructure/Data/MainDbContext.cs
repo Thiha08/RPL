@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace RPL.Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    public class MainDbContext : DbContext
     {
         private readonly IMediator _mediator;
 
-        //public AppDbContext(DbContextOptions options) : base(options)
+        //public MainDbContext(DbContextOptions options) : base(options)
         //{
         //}
 
-        public AppDbContext(DbContextOptions<AppDbContext> options, IMediator mediator)
+        public MainDbContext(DbContextOptions<MainDbContext> options, IMediator mediator)
             : base(options)
         {
             _mediator = mediator;
