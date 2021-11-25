@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace RPL.Web.Endpoints.ProjectEndpoints
+﻿namespace RPL.Web.Endpoints.ProjectEndpoints
 {
     public class GetProjectByIdRequest
     {

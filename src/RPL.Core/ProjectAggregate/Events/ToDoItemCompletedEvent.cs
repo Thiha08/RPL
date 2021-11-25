@@ -1,5 +1,4 @@
-﻿using RPL.Core.ProjectAggregate;
-using RPL.SharedKernel;
+﻿using RPL.SharedKernel;
 
 namespace RPL.Core.ProjectAggregate.Events
 {

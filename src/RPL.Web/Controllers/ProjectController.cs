@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RPL.Core;
 using RPL.Core.ProjectAggregate;
 using RPL.Core.ProjectAggregate.Specifications;
 using RPL.SharedKernel.Interfaces;
-using RPL.Web.ApiModels;
 using RPL.Web.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;

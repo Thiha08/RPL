@@ -1,5 +1,4 @@
 ﻿using Ardalis.Specification;
-using RPL.Core.ProjectAggregate;
 
 namespace RPL.Core.ProjectAggregate.Specifications
 {

@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RPL.Core.ProjectAggregate.Entities;
+using Microsoft.OpenApi.Models;
+using RPL.Core.Entities;
+using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
+using RPL.Infrastructure.Mappers;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
@@ -10,11 +13,13 @@ namespace RPL.Infrastructure
 {
     public static class StartupSetup
     {
-        public static void AddIdentityDbContext(this IServiceCollection services, string identityDatabaseConnectionString) =>
+        public static void AddIdentityDbContext(this IServiceCollection services,
+            string identityDatabaseConnectionString) =>
             services.AddDbContext<IdentityDbContext>(options =>
                 options.UseSqlServer(identityDatabaseConnectionString)); // will be created in web project root
 
-        public static void AddMainDbContext(this IServiceCollection services, string mainDatabaseConnectionString) =>
+        public static void AddMainDbContext(this IServiceCollection services,
+            string mainDatabaseConnectionString) =>
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(mainDatabaseConnectionString)); // will be created in web project root
 
@@ -32,13 +37,15 @@ namespace RPL.Infrastructure
             .AddDefaultTokenProviders();
 
 
-        public static void AddIdentityServer(this IServiceCollection services, X509Certificate2 certificate, string identityDatabaseConnectionString) =>
+        public static void AddIdentityServer(this IServiceCollection services,
+            X509Certificate2 certificate,
+            string identityDatabaseConnectionString) =>
             services.AddIdentityServer()
                     .AddSigningCredential(certificate)
                     .AddConfigurationStore(options =>
                     {
                         options.ConfigureDbContext = builder =>
-                            builder.UseSqlServer(identityDatabaseConnectionString, 
+                            builder.UseSqlServer(identityDatabaseConnectionString,
                                 sql => sql.MigrationsAssembly(typeof(StartupSetup).GetTypeInfo().Assembly.GetName().Name));
                     })
                     .AddOperationalStore(options =>
@@ -53,5 +60,73 @@ namespace RPL.Infrastructure
 
                     })
                     .AddAspNetIdentity<ApplicationUser>();
+
+        public static void AddIdentityAuthentication(this IServiceCollection services,
+            string authority,
+            string audience) =>
+            services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = authority;
+                        options.RequireHttpsMetadata = false;
+                        options.Audience = audience;
+                    });
+
+        public static void AddAutoMapper(this IServiceCollection services) =>
+            services.AddAutoMapper(typeof(AutomapperMaps));
+
+        public static void AddSwaggerGeneration(this IServiceCollection services,
+            SwaggerSettings settings) =>
+            //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(settings.Name, new OpenApiInfo
+                {
+                    Version = settings.Version,
+                    Title = settings.Title,
+                    Description = settings.Description,
+                    //Contact = new OpenApiContact
+                    //{
+                    //    Name = "Shayne Boyer",
+                    //    Email = string.Empty,
+                    //    Url = new Uri("https://twitter.com/spboyer"),
+                    //},
+                    //License = new OpenApiLicense
+                    //{
+                    //    Name = "Use under LICX",
+                    //    Url = new Uri("https://example.com/license"),
+                    //}
+                });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+
+                c.EnableAnnotations();
+
+                // Set the comments path for the Swagger JSON and UI.
+                c.IncludeXmlComments(settings.XmlPath);
+            });
+
+
     }
 }

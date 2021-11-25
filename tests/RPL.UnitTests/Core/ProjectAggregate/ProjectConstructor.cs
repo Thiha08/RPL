@@ -34,7 +34,7 @@ namespace RPL.UnitTests.Core.ProjectAggregate
         {
             _testProject = CreateProject();
 
-            Assert.Equal(ProjectStatus.Complete, _testProject.Status);
+            Assert.Equal(ProjectStatus.Complete, _testProject.ProjectStatus);
         }
     }
 }

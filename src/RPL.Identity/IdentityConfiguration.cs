@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityModel;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using static IdentityServer4.IdentityServerConstants;
@@ -37,19 +38,22 @@ namespace RPL.Identity
                 new ApiResource(Configuration["RyawgenAppIdentitySettings:Scope"], Configuration["RyawgenAppIdentitySettings:Name"])
                 {
                     Scopes = new List<string>{ Configuration["RyawgenAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) }
+                    ApiSecrets = { new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) },
+                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
                 },
 
                 new ApiResource(Configuration["ParamanAppIdentitySettings:Scope"], Configuration["ParamanAppIdentitySettings:Name"])
                 {
                     Scopes = new List<string>{ Configuration["ParamanAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256()) }
+                    ApiSecrets = { new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256()) },
+                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
                 },
 
                 new ApiResource(Configuration["LarbanAppIdentitySettings:Scope"], Configuration["LarbanAppIdentitySettings:Name"])
                 {
                     Scopes = new List<string>{ Configuration["LarbanAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256()) }
+                    ApiSecrets = { new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256()) },
+                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
                 }
             };
 
@@ -61,7 +65,7 @@ namespace RPL.Identity
                     ClientId = Configuration["RyawgenAppIdentitySettings:ClientId"],
                     ClientName = Configuration["RyawgenAppIdentitySettings:Name"],
                     ClientSecrets = { new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) },
-                    
+
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AccessTokenLifetime = 259200, // Three Days
                     SlidingRefreshTokenLifetime = 2592000, // One Month
@@ -70,10 +74,10 @@ namespace RPL.Identity
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     RefreshTokenUsage = TokenUsage.OneTimeOnly,
 
-                    AllowedScopes = 
-                    { 
-                        Configuration["RyawgenAppIdentitySettings:Scope"],
-                        "offline_access"
+                    AllowedScopes =
+                    {
+                        StandardScopes.OfflineAccess,
+                        Configuration["RyawgenAppIdentitySettings:Scope"]
                     },
                 },
 
@@ -91,10 +95,10 @@ namespace RPL.Identity
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     RefreshTokenUsage = TokenUsage.OneTimeOnly,
 
-                    AllowedScopes = 
-                    { 
-                        Configuration["ParamanAppIdentitySettings:Scope"],
-                        "offline_access"
+                    AllowedScopes =
+                    {
+                        StandardScopes.OfflineAccess,
+                        Configuration["ParamanAppIdentitySettings:Scope"]
                     },
                 },
 
@@ -111,7 +115,7 @@ namespace RPL.Identity
                     AllowOfflineAccess = true, // For refresh token.
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                    
+
                     AccessTokenType = AccessTokenType.Reference,
                     RequireConsent = false,
                     RequireClientSecret = false,

@@ -1,5 +1,4 @@
-﻿using RPL.Core.ProjectAggregate;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace RPL.Web.Endpoints.ProjectEndpoints
 {

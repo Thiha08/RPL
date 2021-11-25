@@ -3,6 +3,7 @@ using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,29 @@ namespace RPL.Identity
         public void ConfigureServices(IServiceCollection services)
         {
             string identityDatabaseConnectionString = Configuration.GetConnectionString("IdentityDatabaseConnection");
-            var certificate = new X509Certificate2(WebHostEnvironment.ContentRootPath + Configuration["AppSettings:CertificatePath"], Configuration["AppSettings:ExportPassword"]);
+            // var certificate = new X509Certificate2(WebHostEnvironment.ContentRootPath + Configuration["AppSettings:CertificatePath"], Configuration["AppSettings:ExportPassword"]);
+
+            // Looking for a Self-Signed Certificate for Identity Server and Azure 
+            //
+            // Reference: https://benjii.me/2017/06/creating-self-signed-certificate-identity-server-azure/
+            // Reference: https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/how-to-view-certificates-with-the-mmc-snap-in
+            // Reference: https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/how-to-retrieve-the-thumbprint-of-a-certificate
+            X509Certificate2 certificate = null;
+            //using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+            //{
+            //    certStore.Open(OpenFlags.ReadOnly);
+            //    X509Certificate2Collection certCollection = certStore.Certificates.Find(
+            //        X509FindType.FindByThumbprint,
+            //        Configuration["AppSettings:CertificateThumbprint"],
+            //        false);
+            //    // Get the first cert with the thumbprint
+            //    if (certCollection.Count > 0)
+            //    {
+            //        certificate = certCollection[0];
+            //    }
+            //}
+
+            certificate = new X509Certificate2(Path.Combine(WebHostEnvironment.ContentRootPath, Configuration["IdentitySettings:CertificateFileName"]), Configuration["IdentitySettings:CertificatePassword"]);
 
             services.AddIdentityDbContext(identityDatabaseConnectionString);
             services.AddIdentity();
@@ -41,7 +64,7 @@ namespace RPL.Identity
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // InitializeDatabase(app);
+            InitializeDatabase(app);
 
             if (env.IsDevelopment())
             {
@@ -49,8 +72,15 @@ namespace RPL.Identity
             }
             else
             {
-                app.UseHsts();
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
             }
+            //else
+            //{
+            //    app.UseHsts();
+            //}
 
             app.UseRouting();
 
@@ -60,7 +90,7 @@ namespace RPL.Identity
             {
                 endpoints.MapGet("/", async context =>
                 {
-                    await context.Response.WriteAsync("Hello World!");
+                    await context.Response.WriteAsync("RPL Identity Server is running!");
                 });
             });
         }
@@ -75,20 +105,37 @@ namespace RPL.Identity
 
                 var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 context.Database.Migrate();
-                if (!context.Clients.Any())
+
+                if (context.Clients.Any())
                 {
-                    foreach (var client in identityConfiguration.Clients)
+                    foreach (var client in context.Clients)
                     {
-                        context.Clients.Add(client.ToEntity());
+                        context.Clients.Remove(client);
                     }
                     context.SaveChanges();
                 }
+
+                foreach (var client in identityConfiguration.Clients)
+                {
+                    context.Clients.Add(client.ToEntity());
+                }
+
+                context.SaveChanges();
 
                 if (!context.IdentityResources.Any())
                 {
                     foreach (var resource in identityConfiguration.IdentityResources)
                     {
                         context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiScopes.Any())
+                {
+                    foreach (var resource in identityConfiguration.ApiScopes)
+                    {
+                        context.ApiScopes.Add(resource.ToEntity());
                     }
                     context.SaveChanges();
                 }

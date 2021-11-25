@@ -1,5 +1,4 @@
 ﻿using Ardalis.HttpClientTestExtensions;
-using Newtonsoft.Json;
 using RPL.Web;
 using RPL.Web.ApiModels;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace RPL.FunctionalTests.ControllerApis
         {
             var result = await _client.GetAndDeserialize<IEnumerable<ProjectDTO>>("/api/projects");
 
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Contains(result, i => i.Name == SeedData.TestProject1.Name);
         }
     }

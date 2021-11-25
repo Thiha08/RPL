@@ -3,7 +3,7 @@ using RPL.Core.Interfaces;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace RPL.Infrastructure
+namespace RPL.Infrastructure.Services
 {
     public class EmailSender : IEmailSender
     {

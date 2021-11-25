@@ -1,8 +1,10 @@
 ﻿using Ardalis.EFCore.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RPL.Core.Entities;
 using RPL.Core.ProjectAggregate;
 using RPL.SharedKernel;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,20 +26,34 @@ namespace RPL.Infrastructure.Data
         }
 
         public DbSet<ToDoItem> ToDoItems { get; set; }
+
         public DbSet<Project> Projects { get; set; }
+
+        public DbSet<Patient> Patients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
-
-            // alternately this is built-in to EF Core 2.2
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
+            var entries = ChangeTracker.Entries<BaseEntity>()
+               .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entityEntry in entries)
+            {
+                entityEntry.Entity.UpdatedDate = DateTime.UtcNow;
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    entityEntry.Entity.Status = true;
+                    entityEntry.Entity.CreatedDate = DateTime.UtcNow;
+                }
+            }
+
             int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // ignore events if no dispatcher provided

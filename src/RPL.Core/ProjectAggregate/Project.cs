@@ -13,7 +13,7 @@ namespace RPL.Core.ProjectAggregate
 
         private List<ToDoItem> _items = new List<ToDoItem>();
         public IEnumerable<ToDoItem> Items => _items.AsReadOnly();
-        public ProjectStatus Status => _items.All(i => i.IsDone) ? ProjectStatus.Complete : ProjectStatus.InProgress;
+        public ProjectStatus ProjectStatus => _items.All(i => i.IsDone) ? ProjectStatus.Complete : ProjectStatus.InProgress;
 
         public Project(string name)
         {

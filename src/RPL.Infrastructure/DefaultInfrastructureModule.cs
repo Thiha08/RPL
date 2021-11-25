@@ -4,6 +4,7 @@ using MediatR.Pipeline;
 using RPL.Core.Interfaces;
 using RPL.Core.ProjectAggregate;
 using RPL.Infrastructure.Data;
+using RPL.Infrastructure.Services;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Reflection;
@@ -76,8 +77,12 @@ namespace RPL.Infrastructure
                 .AsImplementedInterfaces();
             }
 
-            builder.RegisterType<EmailSender>().As<IEmailSender>()
-                .InstancePerLifetimeScope();
+            builder.RegisterType<EmailSender>().As<IEmailSender>().InstancePerLifetimeScope();
+            builder.RegisterType<SmsSender>().As<ISmsSender>().InstancePerLifetimeScope();
+
+            builder.RegisterType<AuthenticationService>().As<IAuthenticationService>().InstancePerDependency();
+            builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
+            builder.RegisterType<PatientService>().As<IPatientService>().InstancePerDependency();
         }
 
         private void RegisterDevelopmentOnlyDependencies(ContainerBuilder builder)

@@ -1,5 +1,4 @@
 ﻿using Ardalis.ApiEndpoints;
-using Ardalis.Result.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;

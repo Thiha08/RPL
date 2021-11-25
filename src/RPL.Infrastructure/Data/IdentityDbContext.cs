@@ -1,8 +1,7 @@
-﻿using Ardalis.EFCore.Extensions;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RPL.Core.ProjectAggregate.Entities;
+using RPL.Core.Entities;
 
 namespace RPL.Infrastructure.Data
 {
