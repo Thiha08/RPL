@@ -2,9 +2,11 @@ using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RPL.Core;
 using RPL.Core.Entities;
 using RPL.Core.Settings.Identity;
@@ -66,6 +68,8 @@ namespace RPL.Ryawgen
             swaggerSettings.XmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
             services.AddSwaggerGeneration(swaggerSettings);
+
+            services.AddLocalizationConfiguration();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -80,6 +84,10 @@ namespace RPL.Ryawgen
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.EnsureMigrationOfContext<MainDbContext>();
             }
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -97,6 +105,9 @@ namespace RPL.Ryawgen
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(options.Value);
 
             app.UseEndpoints(endpoints =>
             {

@@ -54,7 +54,14 @@ namespace RPL.Identity
             //    }
             //}
 
-            certificate = new X509Certificate2(Path.Combine(WebHostEnvironment.ContentRootPath, Configuration["IdentitySettings:CertificateFileName"]), Configuration["IdentitySettings:CertificatePassword"]);
+            if (WebHostEnvironment.IsDevelopment())
+            {
+                certificate = new X509Certificate2(Path.Combine(WebHostEnvironment.ContentRootPath, Configuration["IdentitySettings:CertificatePath"]), Configuration["IdentitySettings:CertificatePassword"]);
+            }
+            else
+            {
+                certificate = new X509Certificate2(Configuration["IdentitySettings:CertificatePath"], Configuration["IdentitySettings:CertificatePassword"]);
+            }
 
             services.AddIdentityDbContext(identityDatabaseConnectionString);
             services.AddIdentity();

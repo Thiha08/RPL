@@ -2,14 +2,16 @@
 using IdentityModel;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
+using RPL.Core.Common;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
 using RPL.Core.Entities;
 using RPL.Core.Interfaces;
 using RPL.Core.Settings.Identity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -20,32 +22,31 @@ namespace RPL.Infrastructure.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly IStringLocalizer<AuthenticationService> _stringLocalizer;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IdentitySettings _identitySettings;
-        private readonly IUserService _userService;
         private readonly IPatientService _patientService;
+        private readonly IDoctorService _doctorService;
         private readonly ISmsSender _smsSender;
 
         public AuthenticationService(
+            IStringLocalizer<AuthenticationService> stringLocalizer,
             UserManager<ApplicationUser> userManager,
             IOptions<IdentitySettings> identitySettingsAccessor,
-            IUserService userService,
             IPatientService patientService,
+            IDoctorService doctorService,
             ISmsSender smsSender)
         {
+            _stringLocalizer = stringLocalizer;
             _userManager = userManager;
             _identitySettings = identitySettingsAccessor.Value;
-            _userService = userService;
             _patientService = patientService;
+            _doctorService = doctorService;
             _smsSender = smsSender;
         }
 
-        public async Task<Result<SignInResponseDto>> SignInAsync(SignInRequestDto model)
+        public async Task<Result<RefreshTokenResultDto>> RefreshTokenAsync(Core.DTOs.RefreshTokenRequestDto model)
         {
-            var user = await _userManager.FindByNameAsync(model.PhoneNumber);
-
-            if (user == null) return Result<SignInResponseDto>.Error(new[] { "Phone number or password is wrong." });
-
             // discover endpoints from metadata
             var client = new HttpClient();
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
@@ -57,9 +58,9 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError) return Result<SignInResponseDto>.Error(new[] { disco.Error });
+            if (disco.IsError) return Result<RefreshTokenResultDto>.Error(new[] { disco.Error });
 
-            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            var tokenResponse = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
                 Address = disco.TokenEndpoint,
 
@@ -67,13 +68,12 @@ namespace RPL.Infrastructure.Services
                 ClientSecret = _identitySettings.ClientSecret,
                 Scope = _identitySettings.Scope + " offline_access",
 
-                UserName = model.PhoneNumber,
-                Password = model.Password
+                RefreshToken = model.RefreshToken
             });
 
-            if (tokenResponse.IsError) return Result<SignInResponseDto>.Error(new[] { tokenResponse.Error });
+            if (tokenResponse.IsError) return Result<RefreshTokenResultDto>.Error(new[] { tokenResponse.Error });
 
-            return new Result<SignInResponseDto>(new SignInResponseDto
+            return new Result<RefreshTokenResultDto>(new RefreshTokenResultDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
@@ -83,7 +83,7 @@ namespace RPL.Infrastructure.Services
             });
         }
 
-        public async Task<Result<RegistrationResponseDto>> RegisterAsync(RegistrationRequestDto model, string role)
+        public async Task<Result<string>> RegisterAsync(RegistrationRequestDto model, string role)
         {
             var existingUser = await _userManager.FindByNameAsync(model.PhoneNumber);
 
@@ -103,7 +103,15 @@ namespace RPL.Infrastructure.Services
             //    });
             //}
 
-            if (existingUser != null) return Result<RegistrationResponseDto>.Error(new[] { "Account already exists." });
+            if (existingUser != null)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError {
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
+                        ErrorMessage = _stringLocalizer["Account already exists."].Value
+                    }
+                });
+            }
 
             var newUser = new ApplicationUser
             {
@@ -121,7 +129,14 @@ namespace RPL.Infrastructure.Services
 
             var userResult = await _userManager.CreateAsync(newUser, model.Password);
 
-            if (!userResult.Succeeded) return Result<RegistrationResponseDto>.Error(userResult.Errors?.Select(e => e.Description).ToArray());
+            if (!userResult.Succeeded)
+            {
+                return Result<string>.Invalid(userResult.Errors?.Select(e => new ValidationError
+                {
+                    Identifier = e.Code,
+                    ErrorMessage = e.Description
+                }).ToList());
+            }
 
             await _userManager.AddClaimsAsync(newUser, new[]
             {
@@ -132,38 +147,165 @@ namespace RPL.Infrastructure.Services
             if (role == Roles.Patient)
             {
                 var patientResult = await _patientService.CreatePatientAsync(newUser);
-
-                await _smsSender.SendSMSAsync(newUser.PhoneNumber, $"RPL: Your verification code is: { newUser.VerificationCode }.");
+            }
+            else if (role == Roles.Doctor)
+            {
+                var doctorResult = await _doctorService.CreateDoctorAsync(newUser);
             }
 
-            return Result<RegistrationResponseDto>.Success(new RegistrationResponseDto
-            {
-                UserName = newUser.UserName,
-                PhoneNumber = newUser.PhoneNumber
-            }, $"Verification code sent to { newUser.PhoneNumber }.");
+            await _smsSender.SendSMSAsync(newUser.PhoneNumber, $"{_stringLocalizer["RPL: Your verification code is"].Value} : {newUser.VerificationCode}.");
+
+            return Result<string>.Success($"{_stringLocalizer["Verification code sent to"].Value} {newUser.PhoneNumber}.");
         }
 
-        public async Task<Result<string>> ResendVerificationCodeAsync(string phoneNumber)
+        public async Task<Result<string>> ResendVerificationCodeAsync(VerificationCodeRequestDto model)
         {
-            var user = await _userManager.FindByNameAsync(phoneNumber);
+            var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
-            if (user == null) return Result<string>.Error(new[] { "User account does not exist." });
+            if (user == null)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError {
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
+                        ErrorMessage = _stringLocalizer["User account does not exist."].Value
+                    }
+                });
+            }
 
-            if (user.PhoneNumberConfirmed) return Result<string>.Error(new[] { "User account is alrady verified." });
+            if (user.PhoneNumberConfirmed)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError  {
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
+                        ErrorMessage = _stringLocalizer["User account is alrady verified."].Value
+                    }
+                });
+            }
 
             user.VerificationCode = IdentityConstants.GenerateVerificationCode;
             user.VerificationCodeExpiryDate = DateTime.UtcNow.AddSeconds(IdentityConstants.VerificationCodeExpirySeconds);
 
             await _userManager.UpdateAsync(user);
 
-            await _smsSender.SendSMSAsync(user.PhoneNumber, $"RPL: Your verification code is: { user.VerificationCode }");
-            
-            return Result<string>.Success("", $"Verification code sent to { user.PhoneNumber }.");
+            await _smsSender.SendSMSAsync(user.PhoneNumber, $"{_stringLocalizer["RPL: Your verification code is"].Value} : {user.VerificationCode}");
+
+            return Result<string>.Success($"{_stringLocalizer["Verification code sent to"].Value} {user.PhoneNumber}.");
+        }
+
+        public async Task<Result<SignInResultDto>> SignInAsync(SignInRequestDto model)
+        {
+            var user = await _userManager.FindByNameAsync(model.PhoneNumber);
+
+            if (user == null)
+            {
+                return Result<SignInResultDto>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
+                        ErrorMessage = _stringLocalizer["Phone number or password is wrong."].Value 
+                    }
+                });
+            }
+
+            // discover endpoints from metadata
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+            {
+                Address = _identitySettings.IdentityServerUrl,
+                Policy =
+                {
+                    RequireHttps = false
+                }
+            });
+
+            if (disco.IsError) return Result<SignInResultDto>.Error(new[] { disco.Error });
+
+            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+
+                ClientId = _identitySettings.ClientId,
+                ClientSecret = _identitySettings.ClientSecret,
+                Scope = _identitySettings.Scope + " offline_access",
+
+                UserName = model.PhoneNumber,
+                Password = model.Password
+            });
+
+            if (tokenResponse.IsError) return Result<SignInResultDto>.Error(new[] { tokenResponse.Error });
+
+            return new Result<SignInResultDto>(new SignInResultDto
+            {
+                AccessToken = tokenResponse.AccessToken,
+                ExpiresIn = tokenResponse.ExpiresIn,
+                TokenType = tokenResponse.TokenType,
+                RefreshToken = tokenResponse.RefreshToken,
+                Scope = tokenResponse.Scope
+            });
         }
 
         public Task<IResult> SignOutAsync()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Result<string>> VerifyAsync(VerificationRequestDto model)
+        {
+            var user = await _userManager.FindByNameAsync(model.PhoneNumber);
+
+            if (user == null)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
+                        ErrorMessage = _stringLocalizer["User account does not exist."].Value 
+                    }
+                });
+            }
+
+            if (user.Status == false)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
+                        ErrorMessage = _stringLocalizer["User account is deactivated."].Value 
+                    }
+                });
+            }
+
+            if (user.PhoneNumberConfirmed == true)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
+                        ErrorMessage = _stringLocalizer["User account is alrady verified."].Value 
+                    }
+                });
+            }
+
+            if (user.VerificationCode != model.VerificationCode)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.VerificationCode)), 
+                        ErrorMessage = _stringLocalizer["Invalid verification code."] 
+                    }
+                });
+            }
+
+            if (user.VerificationCodeExpiryDate < DateTime.UtcNow)
+            {
+                return Result<string>.Invalid(new List<ValidationError> {
+                    new ValidationError { 
+                        Identifier = Identifier.Serialize(nameof(model.VerificationCode)), 
+                        ErrorMessage = _stringLocalizer["Expired verification code."].Value 
+                    }
+                });
+            }
+
+            user.PhoneNumberConfirmed = true;
+            await _userManager.UpdateAsync(user);
+
+            return Result<string>.Success(_stringLocalizer["User account is verified successfully."].Value);
         }
     }
 }

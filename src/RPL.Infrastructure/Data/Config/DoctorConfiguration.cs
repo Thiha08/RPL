@@ -4,9 +4,9 @@ using RPL.Core.Entities;
 
 namespace RPL.Infrastructure.Data.Config
 {
-    public class PatientConfiguration : IEntityTypeConfiguration<Patient>
+    public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
     {
-        public void Configure(EntityTypeBuilder<Patient> builder)
+        public void Configure(EntityTypeBuilder<Doctor> builder)
         {
             builder.HasIndex(x => x.UserId)
                 .IsUnique();
@@ -26,6 +26,11 @@ namespace RPL.Infrastructure.Data.Config
             builder.Property(x => x.PhoneNumber)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            builder.HasOne(d => d.Clinic)
+                .WithMany(c => c.Doctors)
+                .HasForeignKey(b => b.ClinicId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

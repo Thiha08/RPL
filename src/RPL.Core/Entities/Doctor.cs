@@ -1,12 +1,11 @@
 ﻿using RPL.SharedKernel;
 using RPL.SharedKernel.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace RPL.Core.Entities
 {
-    public class Patient : BaseEntity, IAggregateRoot
+    public class Doctor : BaseEntity, IAggregateRoot
     {
         public string UserId { get; set; }
 
@@ -18,6 +17,14 @@ namespace RPL.Core.Entities
 
         public Address Address { get; set; }
 
+        public long ClinicId { get; set; }
+
+        public Clinic Clinic { get; set; }
+
         public ICollection<Booking> Bookings { get; set; }
+
+        public ICollection<DoctorSchedule> DoctorSchedule { get; set; }
+
+        public bool IsOnShift { get; set; }
     }
 }

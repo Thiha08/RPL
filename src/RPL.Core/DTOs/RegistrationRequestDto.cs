@@ -11,9 +11,7 @@ namespace RPL.Core.DTOs
         [Required]
         public string FullName { get; set; }
 
-        [Required]
         public DateTime DateOfBirth { get; set; }
-
 
         public string Address { get; set; }
 

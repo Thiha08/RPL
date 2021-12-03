@@ -53,39 +53,6 @@ namespace RPL.Infrastructure.Services
             return Result<ApplicationUser>.Success(user);
         }
 
-        public async Task<Result<string>> VerifyUserPhoneNumberAsync(string phoneNumber, string verificationCode)
-        {
-            var user = await _userManager.FindByNameAsync(phoneNumber);
-
-            if (user == null)
-            {
-                return Result<string>.Error(new[] { $"User account does not exist." });
-            }
-
-            if (user.Status == false)
-            {
-                return Result<string>.Error(new[] { $"User account is deactivated." });
-            }
-
-            if (user.PhoneNumberConfirmed == true)
-            {
-                return Result<string>.Error(new[] { $"User account is alrady verified." });
-            }
-
-            if (user.VerificationCode != verificationCode)
-            {
-                return Result<string>.Error(new[] { $"Invalid verification code." });
-            }
-
-            if (user.VerificationCodeExpiryDate < DateTime.UtcNow)
-            {
-                return Result<string>.Error(new[] { $"Expired verification code." });
-            }
-
-            user.PhoneNumberConfirmed = true;
-            await _userManager.UpdateAsync(user);
-
-            return Result<string>.Success("", "User account is verified successfully.");
-        }
+        
     }
 }

@@ -83,6 +83,7 @@ namespace RPL.Infrastructure
             builder.RegisterType<AuthenticationService>().As<IAuthenticationService>().InstancePerDependency();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
             builder.RegisterType<PatientService>().As<IPatientService>().InstancePerDependency();
+            builder.RegisterType<DoctorService>().As<IDoctorService>().InstancePerDependency();
         }
 
         private void RegisterDevelopmentOnlyDependencies(ContainerBuilder builder)

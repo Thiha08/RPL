@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RPL.Infrastructure.Data;
 
 namespace RPL.Infrastructure.Migrations.MainDb
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211126095503_AddDoctor")]
+    partial class AddDoctor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,116 +21,12 @@ namespace RPL.Infrastructure.Migrations.MainDb
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("RPL.Core.Entities.Booking", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime?>("BookingCancelledDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("BookingEndDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("BookingNumber")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("BookingStartDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("BookingStatus")
-                        .HasColumnType("int");
-
-                    b.Property<long>("ClinicId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("DoctorId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PatientId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicId");
-
-                    b.HasIndex("DoctorId");
-
-                    b.HasIndex("PatientId");
-
-                    b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.Clinic", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ClinicName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicName");
-
-                    b.HasIndex("PhoneNumber");
-
-                    b.ToTable("Clinics");
-                });
-
             modelBuilder.Entity("RPL.Core.Entities.Doctor", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long>("ClinicId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -138,9 +36,6 @@ namespace RPL.Infrastructure.Migrations.MainDb
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsOnShift")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -167,8 +62,6 @@ namespace RPL.Infrastructure.Migrations.MainDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClinicId");
-
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
@@ -176,44 +69,6 @@ namespace RPL.Infrastructure.Migrations.MainDb
                         .IsUnique();
 
                     b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.DoctorSchedule", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("DoctorId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("ScheduleEndDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ScheduleStartDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("DoctorSchedules");
                 });
 
             modelBuilder.Entity("RPL.Core.Entities.Patient", b =>
@@ -340,70 +195,8 @@ namespace RPL.Infrastructure.Migrations.MainDb
                     b.ToTable("ToDoItems");
                 });
 
-            modelBuilder.Entity("RPL.Core.Entities.Booking", b =>
-                {
-                    b.HasOne("RPL.Core.Entities.Clinic", "Clinic")
-                        .WithMany()
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RPL.Core.Entities.Doctor", "Doctor")
-                        .WithMany("Bookings")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RPL.Core.Entities.Patient", "Patient")
-                        .WithMany("Bookings")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Clinic");
-
-                    b.Navigation("Doctor");
-
-                    b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.Clinic", b =>
-                {
-                    b.OwnsOne("RPL.Core.Entities.Address", "ClinicAddress", b1 =>
-                        {
-                            b1.Property<long>("ClinicId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("bigint")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                            b1.Property<string>("AddressBody")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Latitude")
-                                .HasColumnType("float");
-
-                            b1.Property<double>("Longitude")
-                                .HasColumnType("float");
-
-                            b1.HasKey("ClinicId");
-
-                            b1.ToTable("Clinics");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ClinicId");
-                        });
-
-                    b.Navigation("ClinicAddress");
-                });
-
             modelBuilder.Entity("RPL.Core.Entities.Doctor", b =>
                 {
-                    b.HasOne("RPL.Core.Entities.Clinic", "Clinic")
-                        .WithMany("Doctors")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.OwnsOne("RPL.Core.Entities.Address", "Address", b1 =>
                         {
                             b1.Property<long>("DoctorId")
@@ -429,19 +222,6 @@ namespace RPL.Infrastructure.Migrations.MainDb
                         });
 
                     b.Navigation("Address");
-
-                    b.Navigation("Clinic");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.DoctorSchedule", b =>
-                {
-                    b.HasOne("RPL.Core.Entities.Doctor", "Doctor")
-                        .WithMany("DoctorSchedule")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("RPL.Core.Entities.Patient", b =>
@@ -478,23 +258,6 @@ namespace RPL.Infrastructure.Migrations.MainDb
                     b.HasOne("RPL.Core.ProjectAggregate.Project", null)
                         .WithMany("Items")
                         .HasForeignKey("ProjectId");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.Clinic", b =>
-                {
-                    b.Navigation("Doctors");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.Doctor", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("DoctorSchedule");
-                });
-
-            modelBuilder.Entity("RPL.Core.Entities.Patient", b =>
-                {
-                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("RPL.Core.ProjectAggregate.Project", b =>

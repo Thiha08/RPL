@@ -1,6 +1,6 @@
 ﻿namespace RPL.Core.DTOs
 {
-    public class SignInResponseDto
+    public class SignInResultDto
     {
         public string AccessToken { get; set; }
 

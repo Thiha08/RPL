@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -6,6 +8,8 @@ using RPL.Core.Entities;
 using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
 using RPL.Infrastructure.Mappers;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
@@ -127,6 +131,22 @@ namespace RPL.Infrastructure
                 c.IncludeXmlComments(settings.XmlPath);
             });
 
-
+        public static void AddLocalizationConfiguration(this IServiceCollection services) =>
+            services
+            .AddLocalization(options =>
+            {
+                options.ResourcesPath = "";
+            })
+            .Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new []
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("mm"),
+                };
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
     }
 }
