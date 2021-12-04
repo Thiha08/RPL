@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
 using RPL.Core.Interfaces;
+using RPL.Core.Result;
 using System.Threading.Tasks;
 
-namespace RPL.Paraman.Controllers
+namespace RPL.Ryawgen.Controllers
 {
 
     [Route("api/[controller]")]
@@ -31,7 +33,8 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("RefreshToken")]
-        public async Task<ActionResult<RefreshTokenDto>> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
+        [ProducesResponseType(typeof(Result<RefreshTokenDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
         {
             return Ok(await _authenticationService.RefreshTokenAsync(request));
         }
@@ -53,6 +56,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("Register")]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] RegistrationRequest request)
         {
             return Ok(await _authenticationService.RegisterAsync(request, Roles.Doctor));
@@ -71,6 +75,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("ResendVerificationCode")]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] VerificationCodeRequest request)
         {
             return Ok(await _authenticationService.ResendVerificationCodeAsync(request));
@@ -90,7 +95,8 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("SignIn")]
-        public async Task<ActionResult<SignInDto>> SignInAsync([FromBody] SignInRequest request)
+        [ProducesResponseType(typeof(Result<SignInDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
         {
             return Ok(await _authenticationService.SignInAsync(request));
         }
@@ -109,6 +115,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("Verify")]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> VerifyAsync([FromBody] VerificationRequest request)
         {
             return Ok(await _authenticationService.VerifyAsync(request));
