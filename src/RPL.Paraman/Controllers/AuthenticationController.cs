@@ -4,7 +4,7 @@ using RPL.Core.DTOs;
 using RPL.Core.Interfaces;
 using System.Threading.Tasks;
 
-namespace RPL.Ryawgen.Controllers
+namespace RPL.Paraman.Controllers
 {
 
     [Route("api/[controller]")]
