@@ -8,7 +8,6 @@ using RPL.Core.Entities;
 using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
 using RPL.Infrastructure.Mappers;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -139,7 +138,7 @@ namespace RPL.Infrastructure
             })
             .Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultures = new []
+                var supportedCultures = new[]
                 {
                     new CultureInfo("en"),
                     new CultureInfo("mm"),

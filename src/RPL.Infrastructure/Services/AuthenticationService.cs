@@ -55,7 +55,7 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError) 
+            if (disco.IsError)
                 return Result<RefreshTokenResultDto>.BadRequest(disco.Error);
 
             var tokenResponse = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
@@ -69,7 +69,7 @@ namespace RPL.Infrastructure.Services
                 RefreshToken = model.RefreshToken
             });
 
-            if (tokenResponse.IsError) 
+            if (tokenResponse.IsError)
                 return Result<RefreshTokenResultDto>.BadRequest(tokenResponse.Error);
 
             return Result<RefreshTokenResultDto>.Ok(new RefreshTokenResultDto
@@ -102,9 +102,9 @@ namespace RPL.Infrastructure.Services
             //    });
             //}
 
-            if (existingUser != null) 
+            if (existingUser != null)
                 return Result.BadRequest(_stringLocalizer["Account already exists."].Value);
-            
+
 
             var newUser = new ApplicationUser
             {
@@ -171,7 +171,7 @@ namespace RPL.Infrastructure.Services
 
             if (user == null)
                 return Result<SignInResultDto>.BadRequest(_stringLocalizer["Phone number or password is wrong."].Value);
-           
+
             // discover endpoints from metadata
             var client = new HttpClient();
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
@@ -222,19 +222,19 @@ namespace RPL.Infrastructure.Services
 
             if (user == null)
                 return Result.BadRequest(_stringLocalizer["User account does not exist."].Value);
-            
+
             if (user.Status == false)
                 return Result.BadRequest(_stringLocalizer["User account is deactivated."].Value);
-            
+
             if (user.PhoneNumberConfirmed == true)
                 return Result.BadRequest(_stringLocalizer["User account is alrady verified."].Value);
-            
+
             if (user.VerificationCode != model.VerificationCode)
                 return Result.BadRequest(_stringLocalizer["Invalid verification code."].Value);
-          
+
             if (user.VerificationCodeExpiryDate < DateTime.UtcNow)
                 return Result.BadRequest(_stringLocalizer["Expired verification code."].Value);
-            
+
             user.PhoneNumberConfirmed = true;
             await _userManager.UpdateAsync(user);
 

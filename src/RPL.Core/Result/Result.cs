@@ -92,7 +92,7 @@ namespace RPL.Core.Result
 
         public static Result<T> Ok(T data, string message = null)
         {
-            return new Result<T>(data) 
+            return new Result<T>(data)
             {
                 Status = ResultStatus.Ok,
                 Message = message ?? ResultStatus.Ok.ToDescription()

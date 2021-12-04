@@ -2,7 +2,6 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using RPL.Core.DTOs;
 using RPL.Core.Entities;
 using RPL.Core.Interfaces;
 using System;
@@ -53,6 +52,6 @@ namespace RPL.Infrastructure.Services
             return Result<ApplicationUser>.Success(user);
         }
 
-        
+
     }
 }

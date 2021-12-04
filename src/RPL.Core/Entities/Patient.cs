@@ -1,7 +1,6 @@
 ﻿using RPL.SharedKernel;
 using RPL.SharedKernel.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace RPL.Core.Entities
