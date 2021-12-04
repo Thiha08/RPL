@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace RPL.Core.DTOs
+﻿namespace RPL.Core.DTOs
 {
-    public class RefreshTokenResultDto
+    public class SignInDto
     {
-        [Required]
         public string AccessToken { get; set; }
 
         public int ExpiresIn { get; set; }

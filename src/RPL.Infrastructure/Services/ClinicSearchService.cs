@@ -25,7 +25,7 @@ namespace RPL.Infrastructure.Services
             _doctorRepository = doctorRepository;
         }
 
-        public async Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequestDto model)
+        public async Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequest model)
         {
             throw new NotImplementedException();
         }

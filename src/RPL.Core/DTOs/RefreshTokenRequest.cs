@@ -2,7 +2,7 @@
 
 namespace RPL.Core.DTOs
 {
-    public class RefreshTokenRequestDto
+    public class RefreshTokenRequest
     {
         [Required]
         public string RefreshToken { get; set; }

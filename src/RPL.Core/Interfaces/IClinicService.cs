@@ -7,6 +7,6 @@ namespace RPL.Core.Interfaces
 {
     public interface IClinicService
     {
-        Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequestDto model);
+        Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequest model);
     }
 }

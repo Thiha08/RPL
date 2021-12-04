@@ -6,16 +6,16 @@ namespace RPL.Core.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<Result<RefreshTokenResultDto>> RefreshTokenAsync(RefreshTokenRequestDto model);
+        Task<Result<RefreshTokenDto>> RefreshTokenAsync(RefreshTokenRequest model);
 
-        Task<IResult> RegisterAsync(RegistrationRequestDto model, string role);
+        Task<IResult> RegisterAsync(RegistrationRequest model, string role);
 
-        Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequestDto model);
+        Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequest model);
 
-        Task<Result<SignInResultDto>> SignInAsync(SignInRequestDto model);
+        Task<Result<SignInDto>> SignInAsync(SignInRequest model);
 
         Task<IResult> SignOutAsync();
 
-        Task<IResult> VerifyAsync(VerificationRequestDto model);
+        Task<IResult> VerifyAsync(VerificationRequest model);
     }
 }

@@ -31,7 +31,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("RefreshToken")]
-        public async Task<ActionResult<RefreshTokenResultDto>> RefreshTokenAsync([FromBody] RefreshTokenRequestDto request)
+        public async Task<ActionResult<RefreshTokenDto>> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
         {
             return Ok(await _authenticationService.RefreshTokenAsync(request));
         }
@@ -53,7 +53,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegistrationRequestDto request)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegistrationRequest request)
         {
             return Ok(await _authenticationService.RegisterAsync(request, Roles.Doctor));
         }
@@ -71,7 +71,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("ResendVerificationCode")]
-        public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] VerificationCodeRequestDto request)
+        public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] VerificationCodeRequest request)
         {
             return Ok(await _authenticationService.ResendVerificationCodeAsync(request));
         }
@@ -90,7 +90,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("SignIn")]
-        public async Task<ActionResult<SignInResultDto>> SignInAsync([FromBody] SignInRequestDto request)
+        public async Task<ActionResult<SignInDto>> SignInAsync([FromBody] SignInRequest request)
         {
             return Ok(await _authenticationService.SignInAsync(request));
         }
@@ -109,7 +109,7 @@ namespace RPL.Paraman.Controllers
         ///
         /// </remarks>
         [HttpPost("Verify")]
-        public async Task<IActionResult> VerifyAsync([FromBody] VerificationRequestDto request)
+        public async Task<IActionResult> VerifyAsync([FromBody] VerificationRequest request)
         {
             return Ok(await _authenticationService.VerifyAsync(request));
         }

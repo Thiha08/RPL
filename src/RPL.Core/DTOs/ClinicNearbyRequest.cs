@@ -2,7 +2,7 @@
 
 namespace RPL.Core.DTOs
 {
-    public class ClinicNearbyRequestDto
+    public class ClinicNearbyRequest
     {
         [FromQuery]
         public string Keyword { get; set; }

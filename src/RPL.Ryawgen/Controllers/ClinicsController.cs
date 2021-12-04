@@ -28,7 +28,7 @@ namespace RPL.Ryawgen.Controllers
         /// <returns>A JSON array containing the jobs assigned to the driver.</returns>
         [HttpGet("NearbySearch")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<IEnumerable<ClinicNearbyDto>>> SearchNearbyClinicsAsync(ClinicNearbyRequestDto request)
+        public async Task<ActionResult<IEnumerable<ClinicNearbyDto>>> SearchNearbyClinicsAsync(ClinicNearbyRequest request)
         {
             return Ok();
         }

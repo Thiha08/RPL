@@ -2,12 +2,9 @@
 
 namespace RPL.Core.DTOs
 {
-    public class VerificationRequestDto
+    public class VerificationCodeRequest
     {
         [Required]
         public string PhoneNumber { get; set; }
-
-        [Required]
-        public string VerificationCode { get; set; }
     }
 }

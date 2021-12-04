@@ -2,7 +2,7 @@
 
 namespace RPL.Core.DTOs
 {
-    public class SignInRequestDto
+    public class SignInRequest
     {
         [Required]
         public string PhoneNumber { get; set; }

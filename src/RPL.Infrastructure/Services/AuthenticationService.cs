@@ -42,7 +42,7 @@ namespace RPL.Infrastructure.Services
             _smsSender = smsSender;
         }
 
-        public async Task<Result<RefreshTokenResultDto>> RefreshTokenAsync(Core.DTOs.RefreshTokenRequestDto model)
+        public async Task<Result<RefreshTokenDto>> RefreshTokenAsync(Core.DTOs.RefreshTokenRequest model)
         {
             // discover endpoints from metadata
             var client = new HttpClient();
@@ -56,9 +56,9 @@ namespace RPL.Infrastructure.Services
             });
 
             if (disco.IsError)
-                return Result<RefreshTokenResultDto>.BadRequest(disco.Error);
+                return Result<RefreshTokenDto>.BadRequest(disco.Error);
 
-            var tokenResponse = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            var tokenResponse = await client.RequestRefreshTokenAsync(new IdentityModel.Client.RefreshTokenRequest
             {
                 Address = disco.TokenEndpoint,
 
@@ -70,9 +70,9 @@ namespace RPL.Infrastructure.Services
             });
 
             if (tokenResponse.IsError)
-                return Result<RefreshTokenResultDto>.BadRequest(tokenResponse.Error);
+                return Result<RefreshTokenDto>.BadRequest(tokenResponse.Error);
 
-            return Result<RefreshTokenResultDto>.Ok(new RefreshTokenResultDto
+            return Result<RefreshTokenDto>.Ok(new RefreshTokenDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
@@ -82,7 +82,7 @@ namespace RPL.Infrastructure.Services
             });
         }
 
-        public async Task<IResult> RegisterAsync(RegistrationRequestDto model, string role)
+        public async Task<IResult> RegisterAsync(RegistrationRequest model, string role)
         {
             var existingUser = await _userManager.FindByNameAsync(model.PhoneNumber);
 
@@ -142,10 +142,10 @@ namespace RPL.Infrastructure.Services
 
             await _smsSender.SendSMSAsync(newUser.PhoneNumber, $"{_stringLocalizer["RPL: Your verification code is"].Value} : {newUser.VerificationCode}.");
 
-            return Result.Created($"{_stringLocalizer["Verification code sent to"].Value} {newUser.PhoneNumber}.");
+            return Result.Ok($"{_stringLocalizer["Verification code sent to"].Value} {newUser.PhoneNumber}.");
         }
 
-        public async Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequestDto model)
+        public async Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequest model)
         {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
@@ -165,12 +165,12 @@ namespace RPL.Infrastructure.Services
             return Result.Ok($"{_stringLocalizer["Verification code sent to"].Value} {user.PhoneNumber}.");
         }
 
-        public async Task<Result<SignInResultDto>> SignInAsync(SignInRequestDto model)
+        public async Task<Result<SignInDto>> SignInAsync(SignInRequest model)
         {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-                return Result<SignInResultDto>.BadRequest(_stringLocalizer["Phone number or password is wrong."].Value);
+                return Result<SignInDto>.BadRequest(_stringLocalizer["Phone number or password is wrong."].Value);
 
             // discover endpoints from metadata
             var client = new HttpClient();
@@ -184,7 +184,7 @@ namespace RPL.Infrastructure.Services
             });
 
             if (disco.IsError)
-                return Result<SignInResultDto>.BadRequest(disco.Error);
+                return Result<SignInDto>.BadRequest(disco.Error);
 
             var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
@@ -199,9 +199,9 @@ namespace RPL.Infrastructure.Services
             });
 
             if (tokenResponse.IsError)
-                return Result<SignInResultDto>.BadRequest(tokenResponse.Error);
+                return Result<SignInDto>.BadRequest(tokenResponse.Error);
 
-            return Result<SignInResultDto>.Ok(new SignInResultDto
+            return Result<SignInDto>.Ok(new SignInDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
@@ -216,7 +216,7 @@ namespace RPL.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IResult> VerifyAsync(VerificationRequestDto model)
+        public async Task<IResult> VerifyAsync(VerificationRequest model)
         {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
