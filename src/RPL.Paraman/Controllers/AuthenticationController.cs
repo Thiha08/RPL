@@ -1,5 +1,4 @@
-﻿using Ardalis.Result.AspNetCore;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
 using RPL.Core.Interfaces;
@@ -34,11 +33,11 @@ namespace RPL.Ryawgen.Controllers
         [HttpPost("RefreshToken")]
         public async Task<ActionResult<RefreshTokenResultDto>> RefreshTokenAsync([FromBody] RefreshTokenRequestDto request)
         {
-            return this.ToActionResult(await _authenticationService.RefreshTokenAsync(request));
+            return Ok(await _authenticationService.RefreshTokenAsync(request));
         }
 
         /// <summary>
-        /// Register a new doctor [ONLY FOR DEV]
+        /// Register a new doctor
         /// </summary>
         /// <remarks>
         /// Sample request:
@@ -54,9 +53,9 @@ namespace RPL.Ryawgen.Controllers
         ///
         /// </remarks>
         [HttpPost("Register")]
-        public async Task<ActionResult<string>> RegisterAsync([FromBody] RegistrationRequestDto request)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegistrationRequestDto request)
         {
-            return this.ToActionResult(await _authenticationService.RegisterAsync(request, Roles.Doctor));
+            return Ok(await _authenticationService.RegisterAsync(request, Roles.Doctor));
         }
 
         /// <summary>
@@ -72,9 +71,9 @@ namespace RPL.Ryawgen.Controllers
         ///
         /// </remarks>
         [HttpPost("ResendVerificationCode")]
-        public async Task<ActionResult<string>> ResendVerificationCodeAsync([FromBody] VerificationCodeRequestDto request)
+        public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] VerificationCodeRequestDto request)
         {
-            return this.ToActionResult(await _authenticationService.ResendVerificationCodeAsync(request));
+            return Ok(await _authenticationService.ResendVerificationCodeAsync(request));
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace RPL.Ryawgen.Controllers
         [HttpPost("SignIn")]
         public async Task<ActionResult<SignInResultDto>> SignInAsync([FromBody] SignInRequestDto request)
         {
-            return this.ToActionResult(await _authenticationService.SignInAsync(request));
+            return Ok(await _authenticationService.SignInAsync(request));
         }
 
         /// <summary>
@@ -110,9 +109,9 @@ namespace RPL.Ryawgen.Controllers
         ///
         /// </remarks>
         [HttpPost("Verify")]
-        public async Task<ActionResult<string>> VerifyAsync([FromBody] VerificationRequestDto request)
+        public async Task<IActionResult> VerifyAsync([FromBody] VerificationRequestDto request)
         {
-            return this.ToActionResult(await _authenticationService.VerifyAsync(request));
+            return Ok(await _authenticationService.VerifyAsync(request));
         }
     }
 }

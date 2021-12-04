@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RPL.Infrastructure.Services
 {
-    public class ClinicSearchService : IClinicSearchService
+    public class ClinicSearchService : IClinicService
     {
         private readonly IRepository<Clinic> _clinicRepository;
         private readonly IRepository<Patient> _patientRepository;

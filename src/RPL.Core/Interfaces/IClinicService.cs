@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RPL.Core.Interfaces
 {
-    public interface IClinicSearchService
+    public interface IClinicService
     {
         Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequestDto model);
     }

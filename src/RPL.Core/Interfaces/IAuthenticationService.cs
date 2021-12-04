@@ -1,5 +1,5 @@
-﻿using Ardalis.Result;
-using RPL.Core.DTOs;
+﻿using RPL.Core.DTOs;
+using RPL.Core.Result;
 using System.Threading.Tasks;
 
 namespace RPL.Core.Interfaces
@@ -8,14 +8,14 @@ namespace RPL.Core.Interfaces
     {
         Task<Result<RefreshTokenResultDto>> RefreshTokenAsync(RefreshTokenRequestDto model);
 
-        Task<Result<string>> RegisterAsync(RegistrationRequestDto model, string role);
+        Task<IResult> RegisterAsync(RegistrationRequestDto model, string role);
 
-        Task<Result<string>> ResendVerificationCodeAsync(VerificationCodeRequestDto model);
+        Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequestDto model);
 
         Task<Result<SignInResultDto>> SignInAsync(SignInRequestDto model);
 
         Task<IResult> SignOutAsync();
 
-        Task<Result<string>> VerifyAsync(VerificationRequestDto model);
+        Task<IResult> VerifyAsync(VerificationRequestDto model);
     }
 }

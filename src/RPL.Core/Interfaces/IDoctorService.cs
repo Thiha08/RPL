@@ -1,9 +1,5 @@
-﻿using Ardalis.Result;
-using RPL.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using RPL.Core.Entities;
+using RPL.Core.Result;
 using System.Threading.Tasks;
 
 namespace RPL.Core.Interfaces

@@ -1,18 +1,15 @@
-﻿using Ardalis.Result;
-using IdentityModel;
+﻿using IdentityModel;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using RPL.Core.Common;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
 using RPL.Core.Entities;
 using RPL.Core.Interfaces;
+using RPL.Core.Result;
 using RPL.Core.Settings.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -58,7 +55,8 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError) return Result<RefreshTokenResultDto>.Error(new[] { disco.Error });
+            if (disco.IsError) 
+                return Result<RefreshTokenResultDto>.BadRequest(disco.Error);
 
             var tokenResponse = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
@@ -71,9 +69,10 @@ namespace RPL.Infrastructure.Services
                 RefreshToken = model.RefreshToken
             });
 
-            if (tokenResponse.IsError) return Result<RefreshTokenResultDto>.Error(new[] { tokenResponse.Error });
+            if (tokenResponse.IsError) 
+                return Result<RefreshTokenResultDto>.BadRequest(tokenResponse.Error);
 
-            return new Result<RefreshTokenResultDto>(new RefreshTokenResultDto
+            return Result<RefreshTokenResultDto>.Ok(new RefreshTokenResultDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
@@ -83,7 +82,7 @@ namespace RPL.Infrastructure.Services
             });
         }
 
-        public async Task<Result<string>> RegisterAsync(RegistrationRequestDto model, string role)
+        public async Task<IResult> RegisterAsync(RegistrationRequestDto model, string role)
         {
             var existingUser = await _userManager.FindByNameAsync(model.PhoneNumber);
 
@@ -103,15 +102,9 @@ namespace RPL.Infrastructure.Services
             //    });
             //}
 
-            if (existingUser != null)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError {
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
-                        ErrorMessage = _stringLocalizer["Account already exists."].Value
-                    }
-                });
-            }
+            if (existingUser != null) 
+                return Result.BadRequest(_stringLocalizer["Account already exists."].Value);
+            
 
             var newUser = new ApplicationUser
             {
@@ -130,13 +123,7 @@ namespace RPL.Infrastructure.Services
             var userResult = await _userManager.CreateAsync(newUser, model.Password);
 
             if (!userResult.Succeeded)
-            {
-                return Result<string>.Invalid(userResult.Errors?.Select(e => new ValidationError
-                {
-                    Identifier = e.Code,
-                    ErrorMessage = e.Description
-                }).ToList());
-            }
+                return Result.BadRequest();
 
             await _userManager.AddClaimsAsync(newUser, new[]
             {
@@ -155,32 +142,18 @@ namespace RPL.Infrastructure.Services
 
             await _smsSender.SendSMSAsync(newUser.PhoneNumber, $"{_stringLocalizer["RPL: Your verification code is"].Value} : {newUser.VerificationCode}.");
 
-            return Result<string>.Success($"{_stringLocalizer["Verification code sent to"].Value} {newUser.PhoneNumber}.");
+            return Result.Created($"{_stringLocalizer["Verification code sent to"].Value} {newUser.PhoneNumber}.");
         }
 
-        public async Task<Result<string>> ResendVerificationCodeAsync(VerificationCodeRequestDto model)
+        public async Task<IResult> ResendVerificationCodeAsync(VerificationCodeRequestDto model)
         {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError {
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
-                        ErrorMessage = _stringLocalizer["User account does not exist."].Value
-                    }
-                });
-            }
+                return Result.BadRequest(_stringLocalizer["User account does not exist."].Value);
 
             if (user.PhoneNumberConfirmed)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError  {
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)),
-                        ErrorMessage = _stringLocalizer["User account is alrady verified."].Value
-                    }
-                });
-            }
+                return Result.BadRequest(_stringLocalizer["User account is alrady verified."].Value);
 
             user.VerificationCode = IdentityConstants.GenerateVerificationCode;
             user.VerificationCodeExpiryDate = DateTime.UtcNow.AddSeconds(IdentityConstants.VerificationCodeExpirySeconds);
@@ -189,7 +162,7 @@ namespace RPL.Infrastructure.Services
 
             await _smsSender.SendSMSAsync(user.PhoneNumber, $"{_stringLocalizer["RPL: Your verification code is"].Value} : {user.VerificationCode}");
 
-            return Result<string>.Success($"{_stringLocalizer["Verification code sent to"].Value} {user.PhoneNumber}.");
+            return Result.Ok($"{_stringLocalizer["Verification code sent to"].Value} {user.PhoneNumber}.");
         }
 
         public async Task<Result<SignInResultDto>> SignInAsync(SignInRequestDto model)
@@ -197,15 +170,8 @@ namespace RPL.Infrastructure.Services
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-            {
-                return Result<SignInResultDto>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
-                        ErrorMessage = _stringLocalizer["Phone number or password is wrong."].Value 
-                    }
-                });
-            }
-
+                return Result<SignInResultDto>.BadRequest(_stringLocalizer["Phone number or password is wrong."].Value);
+           
             // discover endpoints from metadata
             var client = new HttpClient();
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
@@ -217,7 +183,8 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError) return Result<SignInResultDto>.Error(new[] { disco.Error });
+            if (disco.IsError)
+                return Result<SignInResultDto>.BadRequest(disco.Error);
 
             var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
@@ -231,9 +198,10 @@ namespace RPL.Infrastructure.Services
                 Password = model.Password
             });
 
-            if (tokenResponse.IsError) return Result<SignInResultDto>.Error(new[] { tokenResponse.Error });
+            if (tokenResponse.IsError)
+                return Result<SignInResultDto>.BadRequest(tokenResponse.Error);
 
-            return new Result<SignInResultDto>(new SignInResultDto
+            return Result<SignInResultDto>.Ok(new SignInResultDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
@@ -248,64 +216,29 @@ namespace RPL.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Result<string>> VerifyAsync(VerificationRequestDto model)
+        public async Task<IResult> VerifyAsync(VerificationRequestDto model)
         {
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
-                        ErrorMessage = _stringLocalizer["User account does not exist."].Value 
-                    }
-                });
-            }
-
+                return Result.BadRequest(_stringLocalizer["User account does not exist."].Value);
+            
             if (user.Status == false)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
-                        ErrorMessage = _stringLocalizer["User account is deactivated."].Value 
-                    }
-                });
-            }
-
+                return Result.BadRequest(_stringLocalizer["User account is deactivated."].Value);
+            
             if (user.PhoneNumberConfirmed == true)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.PhoneNumber)), 
-                        ErrorMessage = _stringLocalizer["User account is alrady verified."].Value 
-                    }
-                });
-            }
-
+                return Result.BadRequest(_stringLocalizer["User account is alrady verified."].Value);
+            
             if (user.VerificationCode != model.VerificationCode)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.VerificationCode)), 
-                        ErrorMessage = _stringLocalizer["Invalid verification code."] 
-                    }
-                });
-            }
-
+                return Result.BadRequest(_stringLocalizer["Invalid verification code."].Value);
+          
             if (user.VerificationCodeExpiryDate < DateTime.UtcNow)
-            {
-                return Result<string>.Invalid(new List<ValidationError> {
-                    new ValidationError { 
-                        Identifier = Identifier.Serialize(nameof(model.VerificationCode)), 
-                        ErrorMessage = _stringLocalizer["Expired verification code."].Value 
-                    }
-                });
-            }
-
+                return Result.BadRequest(_stringLocalizer["Expired verification code."].Value);
+            
             user.PhoneNumberConfirmed = true;
             await _userManager.UpdateAsync(user);
 
-            return Result<string>.Success(_stringLocalizer["User account is verified successfully."].Value);
+            return Result.Ok(_stringLocalizer["User account is verified successfully."].Value);
         }
     }
 }
