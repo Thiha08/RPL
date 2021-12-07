@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using RPL.Core.Entities;
+using RPL.Core.Settings.Identity;
 using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
 using RPL.Infrastructure.Mappers;
@@ -16,18 +20,17 @@ namespace RPL.Infrastructure
 {
     public static class StartupSetup
     {
-        public static void AddIdentityDbContext(this IServiceCollection services,
-            string identityDatabaseConnectionString) =>
+        public static void AddIdentityDbContext(this IServiceCollection services, string identityDatabaseConnectionString) =>
             services.AddDbContext<IdentityDbContext>(options =>
                 options.UseSqlServer(identityDatabaseConnectionString)); // will be created in web project root
 
-        public static void AddMainDbContext(this IServiceCollection services,
-            string mainDatabaseConnectionString) =>
+        public static void AddMainDbContext(this IServiceCollection services, string mainDatabaseConnectionString) =>
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(mainDatabaseConnectionString)); // will be created in web project root
 
 
-        public static void AddIdentity(this IServiceCollection services) =>
+        public static void AddIdentitySystemConfigurations(this IServiceCollection services)
+        {
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -35,14 +38,17 @@ namespace RPL.Infrastructure
                 options.Password.RequiredUniqueChars = 0;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-            })
-            .AddEntityFrameworkStores<IdentityDbContext>()
-            .AddDefaultTokenProviders();
+            });
 
+            new IdentityBuilder(typeof(ApplicationUser), typeof(IdentityRole), services)
+                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddEntityFrameworkStores<IdentityDbContext>()
+                .AddDefaultTokenProviders();
+        }
 
-        public static void AddIdentityServer(this IServiceCollection services,
-            X509Certificate2 certificate,
-            string identityDatabaseConnectionString) =>
+        public static void AddIdentityServerConfigurations(this IServiceCollection services, X509Certificate2 certificate, string identityDatabaseConnectionString)
+        {
             services.AddIdentityServer()
                     .AddSigningCredential(certificate)
                     .AddConfigurationStore(options =>
@@ -63,22 +69,33 @@ namespace RPL.Infrastructure
 
                     })
                     .AddAspNetIdentity<ApplicationUser>();
+        }
 
-        public static void AddIdentityAuthentication(this IServiceCollection services,
-            string authority,
-            string audience) =>
-            services.AddAuthentication("Bearer")
-                    .AddJwtBearer("Bearer", options =>
+        public static void AddIdentityAuthenticationConfigurations(this IServiceCollection services, IdentitySettings settings)
+        {
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
                     {
-                        options.Authority = authority;
+                        options.Authority = settings.IdentityServerUrl;
                         options.RequireHttpsMetadata = false;
-                        options.Audience = audience;
+                        options.ApiName = settings.Scope;
+                        options.ApiSecret = settings.ClientSecret;
                     });
+        }
 
-        public static void AddAutoMapper(this IServiceCollection services) =>
+        public static void AddIdentityGlobalAuthorizationConfigurations(this IServiceCollection services, params string[] scopes)
+        {
+            services.AddMvcCore(options =>
+            {
+                var policy = ScopePolicy.Create(scopes);
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddAuthorization();
+        }
+
+        public static void AddAutoMapperConfigurations(this IServiceCollection services) =>
             services.AddAutoMapper(typeof(AutomapperMaps));
 
-        public static void AddSwaggerGeneration(this IServiceCollection services,
+        public static void AddSwaggerConfigurations(this IServiceCollection services,
             SwaggerSettings settings) =>
             //Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             services.AddSwaggerGen(c =>
@@ -130,7 +147,7 @@ namespace RPL.Infrastructure
                 c.IncludeXmlComments(settings.XmlPath);
             });
 
-        public static void AddLocalizationConfiguration(this IServiceCollection services) =>
+        public static void AddLocalizationConfigurations(this IServiceCollection services) =>
             services
             .AddLocalization(options =>
             {

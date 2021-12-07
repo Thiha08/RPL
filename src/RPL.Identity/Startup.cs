@@ -64,8 +64,8 @@ namespace RPL.Identity
             }
 
             services.AddIdentityDbContext(identityDatabaseConnectionString);
-            services.AddIdentity();
-            services.AddIdentityServer(certificate, identityDatabaseConnectionString);
+            services.AddIdentitySystemConfigurations();
+            services.AddIdentityServerConfigurations(certificate, identityDatabaseConnectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,12 +1,11 @@
 using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RPL.Core;
-using RPL.Core.Entities;
 using RPL.Core.Settings.Identity;
 using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure;
@@ -36,36 +35,26 @@ namespace RPL.Paraman
             string identityDatabaseConnectionString = Configuration.GetConnectionString("IdentityDatabaseConnection");
             string mainDatabaseConnectionString = Configuration.GetConnectionString("MainDatabaseConnectionString");
 
-            services.AddIdentityDbContext(identityDatabaseConnectionString);
-
-            services.AddMainDbContext(mainDatabaseConnectionString);
-
-            services.AddIdentity();
-
-            new IdentityBuilder(typeof(ApplicationUser), typeof(IdentityRole), services)
-                .AddRoleManager<RoleManager<IdentityRole>>()
-                .AddSignInManager<SignInManager<ApplicationUser>>()
-                .AddEntityFrameworkStores<IdentityDbContext>();
-
-            services.AddIdentityAuthentication(
-                Configuration["IdentitySettings:IdentityServerUrl"],
-                Configuration["IdentitySettings:Scope"]);
-
-            services.AddAutoMapper();
-
-            services.AddMvc().AddNewtonsoftJson();
-
+            var identitySettings = new IdentitySettings();
             var identitySettingsSection = Configuration.GetSection("IdentitySettings");
+            identitySettingsSection.Bind(identitySettings);
             services.Configure<IdentitySettings>(identitySettingsSection);
 
             var swaggerSettings = new SwaggerSettings();
             Configuration.GetSection(nameof(SwaggerSettings)).Bind(swaggerSettings);
-
-            // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Set the comments path for the Swagger JSON and UI.
             swaggerSettings.XmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-            services.AddSwaggerGeneration(swaggerSettings);
+            services.AddIdentityDbContext(identityDatabaseConnectionString);
+            services.AddMainDbContext(mainDatabaseConnectionString);
+
+            services.AddIdentitySystemConfigurations();
+            services.AddIdentityAuthenticationConfigurations(identitySettings);
+            services.AddIdentityGlobalAuthorizationConfigurations(identitySettings.Scope);
+            services.AddAutoMapperConfigurations();
+            services.AddSwaggerConfigurations(swaggerSettings);
+            services.AddLocalizationConfigurations();
+            services.AddMvc().AddNewtonsoftJson();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -101,6 +90,9 @@ namespace RPL.Paraman
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(options.Value);
 
             app.UseEndpoints(endpoints =>
             {
