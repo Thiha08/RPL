@@ -2,7 +2,7 @@
 using RPL.Core.Result;
 using System.Threading.Tasks;
 
-namespace RPL.Core.Interfaces
+namespace RPL.Infrastructure.Interfaces
 {
     public interface IAuthenticationService
     {

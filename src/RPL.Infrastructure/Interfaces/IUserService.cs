@@ -2,7 +2,7 @@
 using RPL.Core.Entities;
 using System.Threading.Tasks;
 
-namespace RPL.Core.Interfaces
+namespace RPL.Infrastructure.Interfaces
 {
     public interface IUserService
     {

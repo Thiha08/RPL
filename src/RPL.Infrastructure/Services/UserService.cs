@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RPL.Core.Entities;
 using RPL.Core.Interfaces;
+using RPL.Infrastructure.Interfaces;
 using System;
 using System.Linq;
 using System.Security.Claims;

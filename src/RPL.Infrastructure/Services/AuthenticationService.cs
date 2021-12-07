@@ -9,6 +9,7 @@ using RPL.Core.Entities;
 using RPL.Core.Interfaces;
 using RPL.Core.Result;
 using RPL.Core.Settings.Identity;
+using RPL.Infrastructure.Interfaces;
 using System;
 using System.Net.Http;
 using System.Security.Claims;

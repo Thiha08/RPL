@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
-using RPL.Core.Interfaces;
 using RPL.Core.Result;
+using RPL.Infrastructure.Interfaces;
 using System.Threading.Tasks;
 
 namespace RPL.Ryawgen.Controllers

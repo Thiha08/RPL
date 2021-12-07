@@ -1,8 +1,10 @@
-﻿namespace RPL.Core.DTOs
+﻿using System;
+
+namespace RPL.Core.DTOs
 {
     public class ClinicNearbyDto
     {
-        public long DoctorScheduleId { get; set; }
+        public long Id { get; set; }
 
         public string ClinicName { get; set; }
 
@@ -12,6 +14,8 @@
 
         public string Schedule { get; set; }
 
-        public bool IsBookingAvailable { get; set; }
+        public DateTime ScheduleStartDateTime { get; set; }
+
+        public DateTime ScheduleEndDateTime { get; set; }
     }
 }

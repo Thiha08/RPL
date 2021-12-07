@@ -4,6 +4,7 @@ using MediatR.Pipeline;
 using RPL.Core.Interfaces;
 using RPL.Core.ProjectAggregate;
 using RPL.Infrastructure.Data;
+using RPL.Infrastructure.Interfaces;
 using RPL.Infrastructure.Services;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;

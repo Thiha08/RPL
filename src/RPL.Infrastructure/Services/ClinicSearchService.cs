@@ -1,33 +1,69 @@
-﻿using Ardalis.Result;
-using RPL.Core.DTOs;
+﻿using RPL.Core.DTOs;
 using RPL.Core.Entities;
-using RPL.Core.Interfaces;
+using RPL.Core.Extensions;
+using RPL.Core.Filters;
+using RPL.Core.Result;
+using RPL.Core.Specifications;
+using RPL.Infrastructure.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RPL.Infrastructure.Services
 {
-    public class ClinicSearchService : IClinicService
+    public class ClinicSearchService : IClinicSearchService
     {
-        private readonly IRepository<Clinic> _clinicRepository;
-        private readonly IRepository<Patient> _patientRepository;
-        private readonly IRepository<Doctor> _doctorRepository;
+        private readonly IReadRepository<Clinic> _clinicRepository;
+        private readonly IReadRepository<DoctorSchedule> _scheduleRepository;
 
         public ClinicSearchService(
-            IRepository<Clinic> clinicRepository,
-            IRepository<Patient> patientRepository,
-            IRepository<Doctor> doctorRepository)
+            IReadRepository<Clinic> clinicRepository,
+            IReadRepository<DoctorSchedule> scheduleRepository)
         {
             _clinicRepository = clinicRepository;
-            _patientRepository = patientRepository;
-            _doctorRepository = doctorRepository;
+            _scheduleRepository = scheduleRepository;
         }
 
-        public async Task<Result<IEnumerable<ClinicNearbyDto>>> GetAllNearbyClinicsAsync(ClinicNearbyRequest model)
+        public async Task<Result<IEnumerable<ClinicNearbyDto>>> GetNearbyClinicsAsync(ClinicNearbyFilter filter)
         {
-            throw new NotImplementedException();
+            var clinicSpec = new ClinicsNearbySearchSpec(filter);
+            var clinicsNearby = await _clinicRepository.ListAsync(clinicSpec);
+
+            var doctors = clinicsNearby.SelectMany(x => x.Doctors).ToList();
+
+            var scheduleFilter = new DoctorScheduleFilter
+            {
+                DoctorIds = doctors.Select(x => x.Id).ToList(),
+                StartDateTime = DateTime.UtcNow.Date.AddDays(-1),
+                EndDateTime = DateTime.UtcNow.Date.AddDays(1).AddTicks(-1)
+            };
+            var scheduleSpec = new DoctorSchedulesByDateSpec(scheduleFilter);
+            var schedules = await _scheduleRepository.ListAsync(scheduleSpec);
+
+            var clinicsNearbyDto = new List<ClinicNearbyDto>();
+
+            foreach (var clinic in clinicsNearby)
+            {
+                var clinicDoctors = doctors.Where(x => x.ClinicId == clinic.Id).ToList();
+                var clinicDoctorIds = clinicDoctors.Select(x => x.Id).ToList();
+
+                var clinics = schedules.Where(x => clinicDoctorIds.Contains(x.DoctorId))
+                    .Select(x => new ClinicNearbyDto
+                    {
+                        ClinicName = clinic.ClinicName,
+                        DoctorName = clinicDoctors.FirstOrDefault(d => d.Id == x.DoctorId)?.Name,
+                        Address = clinic.ClinicAddress.AddressBody,
+                        Schedule = $"{x.ScheduleStartDateTime.ToTimeZoneTimeString("0:hh:mm TT")} ~ {x.ScheduleEndDateTime.ToTimeZoneTimeString("0:hh:mm TT")}",
+                        ScheduleStartDateTime = x.ScheduleStartDateTime.ToTimeZoneTime(),
+                        ScheduleEndDateTime = x.ScheduleEndDateTime.ToTimeZoneTime()
+                    }).ToList();
+
+                clinicsNearbyDto.AddRange(clinics);
+            }
+
+            return clinicsNearbyDto;
         }
     }
 }
