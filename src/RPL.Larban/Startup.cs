@@ -23,6 +23,8 @@ namespace RPL.Larban
 
         private readonly IWebHostEnvironment _env;
 
+        private const string AllowAllOrigins = "AllowAllOrigins";
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -33,6 +35,18 @@ namespace RPL.Larban
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AllowAllOrigins,
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             string identityDatabaseConnectionString = Configuration.GetConnectionString("IdentityDatabaseConnection");
             string mainDatabaseConnectionString = Configuration.GetConnectionString("MainDatabaseConnectionString");
 
@@ -76,13 +90,15 @@ namespace RPL.Larban
                 app.EnsureMigrationOfContext<MainDbContext>();
             }
 
+            app.UseCors(AllowAllOrigins);
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.)
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ryawgen APIs");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Larban APIs");
                 c.RoutePrefix = String.Empty;
             });
 

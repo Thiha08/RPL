@@ -1,12 +1,11 @@
-﻿using Ardalis.Result;
-using IdentityModel;
+﻿using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RPL.Core.Entities;
 using RPL.Core.Interfaces;
+using RPL.Core.Result;
 using RPL.Infrastructure.Interfaces;
 using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace RPL.Infrastructure.Services
             var existingUser = await _userManager.Users.FirstOrDefaultAsync(q => q.UserName == user.UserName && q.Status);
             if (existingUser != null)
             {
-                return Result<ApplicationUser>.Error(new[] { $"User account already exists. Please login using the phone number { user.PhoneNumber }." });
+                return Result<ApplicationUser>.BadRequest($"User account already exists. Please login using the phone number { user.PhoneNumber }.");
             }
 
             user.Status = true;
@@ -41,7 +40,7 @@ namespace RPL.Infrastructure.Services
 
             if (!result.Succeeded)
             {
-                return Result<ApplicationUser>.Error(result.Errors.Select(e => e.Description).ToArray());
+                return Result<ApplicationUser>.BadRequest();
             }
 
             await _userManager.AddClaimsAsync(user, new[]
@@ -50,9 +49,7 @@ namespace RPL.Infrastructure.Services
                 new Claim(JwtClaimTypes.Role, role)
             });
 
-            return Result<ApplicationUser>.Success(user);
+            return user;
         }
-
-
     }
 }

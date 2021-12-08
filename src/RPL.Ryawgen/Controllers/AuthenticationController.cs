@@ -11,6 +11,7 @@ namespace RPL.Ryawgen.Controllers
 
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Consumes("application/json")]
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService _authenticationService;

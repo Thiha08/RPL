@@ -34,9 +34,9 @@ namespace RPL.Core.Specifications
             //    Query.Skip(PaginationHelper.CalculateSkip(filter))
             //         .Take(PaginationHelper.CalculateTake(filter));
 
-            if (filter.LoadChildren)
-                Query.Include(x => x.Doctors);
-                        //.ThenInclude(x => x.DoctorSchedule);
+            //if (filter.LoadChildren)
+            Query.Include(x => x.Doctors);
+            //.ThenInclude(x => x.DoctorSchedule);
 
             //Query.OrderBy(x => x.ClinicName)
             //        .ThenByDescending(x => x.ClinicAddress.AddressBody);

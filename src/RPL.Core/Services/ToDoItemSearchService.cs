@@ -1,7 +1,7 @@
-﻿using Ardalis.Result;
-using RPL.Core.Interfaces;
+﻿using RPL.Core.Interfaces;
 using RPL.Core.ProjectAggregate;
 using RPL.Core.ProjectAggregate.Specifications;
+using RPL.Core.Result;
 using RPL.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,20 +23,14 @@ namespace RPL.Core.Services
         {
             if (string.IsNullOrEmpty(searchString))
             {
-                var errors = new List<ValidationError>();
-                errors.Add(new ValidationError()
-                {
-                    Identifier = nameof(searchString),
-                    ErrorMessage = $"{nameof(searchString)} is required."
-                });
-                return Result<List<ToDoItem>>.Invalid(errors);
+                return Result<List<ToDoItem>>.BadRequest($"{nameof(searchString)} is required.");
             }
 
             var projectSpec = new ProjectByIdWithItemsSpec(projectId);
             var project = await _repository.GetBySpecAsync(projectSpec);
 
             // TODO: Optionally use Ardalis.GuardClauses Guard.Against.NotFound and catch
-            if (project == null) return Result<List<ToDoItem>>.NotFound();
+            if (project == null) return Result<List<ToDoItem>>.BadRequest();
 
             var incompleteSpec = new IncompleteItemsSearchSpec(searchString);
 
@@ -44,12 +38,12 @@ namespace RPL.Core.Services
             {
                 var items = incompleteSpec.Evaluate(project.Items).ToList();
 
-                return new Result<List<ToDoItem>>(items);
+                return Result<List<ToDoItem>>.Ok(items);
             }
             catch (Exception ex)
             {
                 // TODO: Log details here
-                return Result<List<ToDoItem>>.Error(new[] { ex.Message });
+                return Result<List<ToDoItem>>.BadRequest(ex.Message);
             }
         }
 
@@ -64,10 +58,10 @@ namespace RPL.Core.Services
 
             if (!items.Any())
             {
-                return Result<ToDoItem>.NotFound();
+                return Result<ToDoItem>.BadRequest();
             }
 
-            return new Result<ToDoItem>(items.First());
+            return Result<ToDoItem>.Ok(items.First());
         }
     }
 }

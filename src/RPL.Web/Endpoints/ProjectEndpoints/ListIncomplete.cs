@@ -1,6 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Interfaces;
+using RPL.Core.Result;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,23 +33,23 @@ namespace RPL.Web.Endpoints.ProjectEndpoints
             var response = new ListIncompleteResponse();
             var result = await _searchService.GetAllIncompleteItemsAsync(request.ProjectId, request.SearchString);
 
-            if (result.Status == Ardalis.Result.ResultStatus.Ok)
+            if (result.Status == ResultStatus.Ok)
             {
                 response.ProjectId = request.ProjectId;
                 response.IncompleteItems = new List<ToDoItemRecord>(
-                        result.Value.Select(
+                        result.Data.Select(
                             item => new ToDoItemRecord(item.Id,
                             item.Title,
                             item.Description,
                             item.IsDone)));
             }
-            else if (result.Status == Ardalis.Result.ResultStatus.Invalid)
+            else if (result.Status == ResultStatus.BadRequest)
             {
-                return BadRequest(result.ValidationErrors);
+                return BadRequest();
             }
-            else if (result.Status == Ardalis.Result.ResultStatus.NotFound)
+            else if (result.Status == ResultStatus.InternalServerError)
             {
-                return NotFound();
+                return UnprocessableEntity();
             }
 
             return Ok(response);

@@ -1,5 +1,5 @@
-﻿using Ardalis.Result;
-using RPL.Core.Entities;
+﻿using RPL.Core.Entities;
+using RPL.Core.Result;
 using System.Threading.Tasks;
 
 namespace RPL.Infrastructure.Interfaces

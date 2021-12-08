@@ -1,6 +1,8 @@
-﻿namespace RPL.Paraman.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace RPL.Paraman.Controllers
 {
-    public class BaseController
+    public abstract class BaseController : Controller
     {
     }
 }

@@ -1,5 +1,6 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.ComponentModel;
+
 
 namespace RPL.Core.Filters
 {

@@ -1,6 +1,6 @@
 ﻿namespace RPL.Core.Filters
 {
-    public class ClinicNearbyFilter : BaseFilter
+    public class ClinicNearbyFilter /*: BaseFilter*/
     {
         public string Keyword { get; set; }
 
