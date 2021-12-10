@@ -1,26 +1,61 @@
+import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
-import { ClinicsComponent } from './clinics/clinics.component';
-import { ManageClinicComponent } from './clinics/manage-clinic/manage-clinic.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import {
+  NbAuthComponent,
+  NbLoginComponent,
+  NbLogoutComponent,
+  NbRegisterComponent,
+  NbRequestPasswordComponent,
+  NbResetPasswordComponent,
+} from '@nebular/auth';
 
-const routes: Routes = [
-    {
+export const routes: Routes = [
+  {
+    path: 'pages',
+    loadChildren: () => import('./pages/pages.module')
+      .then(m => m.PagesModule),
+  },
+  {
+    path: 'auth',
+    component: NbAuthComponent,
+    children: [
+      {
         path: '',
-        component: AppComponent,
-        children: [
-            { path: '', component: DashboardComponent },
-            { path: 'dashboard', component: DashboardComponent },
-            { path: 'clinics', component: ClinicsComponent },
-            { path: 'clinics/:id', component: ManageClinicComponent }
-        ]
-    }
+        component: NbLoginComponent,
+      },
+      {
+        path: 'login',
+        component: NbLoginComponent,
+      },
+      {
+        path: 'register',
+        component: NbRegisterComponent,
+      },
+      {
+        path: 'logout',
+        component: NbLogoutComponent,
+      },
+      {
+        path: 'request-password',
+        component: NbRequestPasswordComponent,
+      },
+      {
+        path: 'reset-password',
+        component: NbResetPasswordComponent,
+      },
+    ],
+  },
+  { path: '', redirectTo: 'pages', pathMatch: 'full' },
+  { path: '**', redirectTo: 'pages' },
 ];
 
+const config: ExtraOptions = {
+  useHash: false,
+};
+
 @NgModule({
-    declarations: [],
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes, config)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
