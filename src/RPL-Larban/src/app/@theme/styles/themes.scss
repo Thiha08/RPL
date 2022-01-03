@@ -3,6 +3,9 @@
 // @nebular out of the box themes
 @import '~@nebular/theme/styles/themes';
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Display&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
 $nb-themes: nb-register-theme((
   layout-padding-top: 2.25rem,
 
@@ -85,4 +88,9 @@ $nb-themes: nb-register-theme((
   slide-out-background: linear-gradient(270deg, #222b45 0%, #151a30 100%),
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
+), dark, dark);
+
+$nb-themes: nb-register-theme((
+    font-family-primary: unquote('Noto Sans Display, sans-serif'),
+    font-family-secondary: unquote('Roboto, sans-serif'),
 ), dark, dark);

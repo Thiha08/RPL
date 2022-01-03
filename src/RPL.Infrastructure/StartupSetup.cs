@@ -22,11 +22,11 @@ namespace RPL.Infrastructure
     {
         public static void AddIdentityDbContext(this IServiceCollection services, string identityDatabaseConnectionString) =>
             services.AddDbContext<IdentityDbContext>(options =>
-                options.UseSqlServer(identityDatabaseConnectionString)); // will be created in web project root
+                options.UseMySql(identityDatabaseConnectionString, ServerVersion.AutoDetect(identityDatabaseConnectionString))); // will be created in web project root
 
         public static void AddMainDbContext(this IServiceCollection services, string mainDatabaseConnectionString) =>
             services.AddDbContext<MainDbContext>(options =>
-                options.UseSqlServer(mainDatabaseConnectionString)); // will be created in web project root
+                options.UseMySql(mainDatabaseConnectionString, ServerVersion.AutoDetect(mainDatabaseConnectionString))); // will be created in web project root
 
 
         public static void AddIdentitySystemConfigurations(this IServiceCollection services)
@@ -54,13 +54,13 @@ namespace RPL.Infrastructure
                     .AddConfigurationStore(options =>
                     {
                         options.ConfigureDbContext = builder =>
-                            builder.UseSqlServer(identityDatabaseConnectionString,
+                            builder.UseMySql(identityDatabaseConnectionString, ServerVersion.AutoDetect(identityDatabaseConnectionString),
                                 sql => sql.MigrationsAssembly(typeof(StartupSetup).GetTypeInfo().Assembly.GetName().Name));
                     })
                     .AddOperationalStore(options =>
                     {
                         options.ConfigureDbContext = builder =>
-                            builder.UseSqlServer(identityDatabaseConnectionString,
+                            builder.UseMySql(identityDatabaseConnectionString, ServerVersion.AutoDetect(identityDatabaseConnectionString),
                                 sql => sql.MigrationsAssembly(typeof(StartupSetup).GetTypeInfo().Assembly.GetName().Name));
 
                         // this enables automatic token cleanup. this is optional.

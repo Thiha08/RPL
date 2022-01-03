@@ -184,14 +184,14 @@
       }
     }
   },
-  "defaultProject": "ngx-admin-demo",
+  "defaultProject": "rpl-admin",
   "schematics": {
     "@schematics/angular:component": {
-      "prefix": "ngx",
+      "prefix": [ "ngx", "rpl" ],
       "style": "scss"
     },
     "@schematics/angular:directive": {
-      "prefix": "ngx"
+      "prefix": [ "ngx", "rpl" ]
     }
   }
 }

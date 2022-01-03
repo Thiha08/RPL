@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.Constants.Identity;
 using RPL.Core.DTOs;
@@ -11,6 +12,8 @@ namespace RPL.Larban.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Consumes("application/json")]
+    [AllowAnonymous]
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService _authenticationService;

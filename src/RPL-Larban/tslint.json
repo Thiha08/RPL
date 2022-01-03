@@ -107,13 +107,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "ngx",
+      [ "ngx", "rpl" ],
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "ngx",
+      [ "ngx", "rpl" ],
       "kebab-case"
     ],
     "ban": [
@@ -133,5 +133,5 @@
     "use-pipe-transform-interface": true,
     "component-class-suffix": true,
     "directive-class-suffix": true
-}
+  }
 }
