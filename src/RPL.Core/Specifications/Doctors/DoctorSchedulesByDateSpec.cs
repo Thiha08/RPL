@@ -3,7 +3,7 @@ using RPL.Core.Entities;
 using RPL.Core.Filters;
 using System.Linq;
 
-namespace RPL.Core.Specifications
+namespace RPL.Core.Specifications.Doctors
 {
     public class DoctorSchedulesByDateSpec : Specification<DoctorSchedule>
     {

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RPL.Core.Result;
 using System;
 using System.Net;
@@ -43,7 +45,11 @@ namespace RPL.Infrastructure.Middlewares
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.OK;
-            return context.Response.WriteAsync(Result.BadRequest(exception.Message).ToString());
+
+            var camelCaseFormatter = new JsonSerializerSettings();
+            camelCaseFormatter.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(Result.BadRequest(exception.Message), camelCaseFormatter));
         }
     }
 }

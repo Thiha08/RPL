@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.DTOs;
 using RPL.Core.Result;
@@ -11,6 +12,8 @@ namespace RPL.Larban.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Consumes("application/json")]
+    [AllowAnonymous]
     public class ClinicsController : BaseController
     {
         private readonly IClinicService _clinicService;
@@ -28,7 +31,13 @@ namespace RPL.Larban.Controllers
         ///
         ///     PUT api/Clinics
         ///     {
-        ///        "refreshToken": "..."
+        ///        "clinicName": "Thukha Clinic",
+        ///        "phoneNumber": "09424432870", // Phone number starts with '09'
+        ///        "clinicAddress": {
+        ///             "addressBody": "Thukha Rd, Yangon",
+        ///             "latitude": "16.840216908631813",
+        ///             "longitude": "96.1248596820284"
+        ///         }
         ///     }
         ///
         /// </remarks>
@@ -45,10 +54,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST api/Clinics/5
-        ///     {
-        ///        "refreshToken": "..."
-        ///     }
+        ///     DELETE api/Clinics/5
         ///
         /// </remarks>
         [HttpDelete("{id}")]
@@ -65,9 +71,6 @@ namespace RPL.Larban.Controllers
         /// Sample request:
         ///
         ///     GET api/Clinics/5
-        ///     {
-        ///        "refreshToken": "..."
-        ///     }
         ///
         /// </remarks>
         [HttpGet("{id}")]
@@ -84,9 +87,6 @@ namespace RPL.Larban.Controllers
         /// Sample request:
         ///
         ///     GET api/Clinics
-        ///     {
-        ///        "refreshToken": "..."
-        ///     }
         ///
         /// </remarks>
         [HttpGet]
@@ -104,7 +104,13 @@ namespace RPL.Larban.Controllers
         ///
         ///     PUT api/Clinics/5
         ///     {
-        ///        "refreshToken": "..."
+        ///        "clinicName": "Thukha Clinic",
+        ///        "phoneNumber": "09424432870", // Phone number starts with '09'
+        ///        "clinicAddress": {
+        ///             "addressBody": "Thukha Rd, Yangon",
+        ///             "latitude": "16.840216908631813",
+        ///             "longitude": "96.1248596820284"
+        ///         }
         ///     }
         ///
         /// </remarks>
@@ -114,5 +120,6 @@ namespace RPL.Larban.Controllers
         {
             return Ok(await _clinicService.UpdateClinicAsync(id, clinicDto));
         }
+
     }
 }

@@ -29,7 +29,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/RefreshToken
+        ///     POST api/Authentication/RefreshToken
         ///     {
         ///        "refreshToken": "..."
         ///     }
@@ -48,7 +48,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/Register
+        ///     POST api/Authentication/Register
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///        "password": "MyPassword123!",
@@ -71,7 +71,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/ResendVerificationCode
+        ///     POST api/Authentication/ResendVerificationCode
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///     }
@@ -90,7 +90,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/SignIn
+        ///     POST api/Authentication/SignIn
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///        "password": "welcome123"
@@ -110,7 +110,7 @@ namespace RPL.Larban.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/Verify
+        ///     POST api/Authentication/Verify
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///        "verificationCode": "123456"  // six digits number 
