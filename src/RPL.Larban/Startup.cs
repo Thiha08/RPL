@@ -90,6 +90,8 @@ namespace RPL.Larban
                 app.EnsureMigrationOfContext<MainDbContext>();
             }
 
+            app.ConfigureGlobalExceptionMiddleware();
+
             app.UseCors(AllowAllOrigins);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.

@@ -12,6 +12,7 @@ using RPL.Core.Settings.Identity;
 using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
 using RPL.Infrastructure.Mappers;
+using RPL.Infrastructure.Middlewares;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -164,5 +165,8 @@ namespace RPL.Infrastructure
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
+
+        public static void ConfigureGlobalExceptionMiddleware(this IApplicationBuilder app) =>
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
     }
 }

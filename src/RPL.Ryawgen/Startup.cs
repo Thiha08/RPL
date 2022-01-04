@@ -76,6 +76,8 @@ namespace RPL.Ryawgen
                 app.EnsureMigrationOfContext<MainDbContext>();
             }
 
+            app.ConfigureGlobalExceptionMiddleware();
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
