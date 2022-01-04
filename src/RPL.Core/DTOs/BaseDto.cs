@@ -1,4 +1,4 @@
-﻿namespace RPL.Core.Dtos
+﻿namespace RPL.Core.DTOs
 {
     public abstract class BaseDto
     {
