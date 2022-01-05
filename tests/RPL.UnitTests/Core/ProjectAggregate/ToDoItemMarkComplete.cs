@@ -1,4 +1,4 @@
-﻿using RPL.Core.ProjectAggregate.Events;
+﻿using RPL.Core.Events;
 using System.Linq;
 using Xunit;
 

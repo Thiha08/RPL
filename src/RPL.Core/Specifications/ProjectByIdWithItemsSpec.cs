@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
+using RPL.Core.Entities;
 
-namespace RPL.Core.ProjectAggregate.Specifications
+namespace RPL.Core.Specifications
 {
     public class ProjectByIdWithItemsSpec : Specification<Project>, ISingleResultSpecification
     {

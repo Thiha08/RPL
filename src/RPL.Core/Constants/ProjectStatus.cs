@@ -1,5 +1,5 @@
 ﻿
-namespace RPL.Core.ProjectAggregate
+namespace RPL.Core.Constants
 {
     public enum ProjectStatus
     {

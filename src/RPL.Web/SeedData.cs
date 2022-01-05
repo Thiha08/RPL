@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RPL.Core.ProjectAggregate;
+using RPL.Core.Entities;
 using RPL.Infrastructure.Data;
 using System;
 using System.Linq;

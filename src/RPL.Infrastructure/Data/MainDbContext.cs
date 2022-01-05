@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RPL.Core.Entities;
-using RPL.Core.ProjectAggregate;
 using RPL.SharedKernel;
 using System;
 using System.Linq;

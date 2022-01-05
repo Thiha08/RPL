@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
-using RPL.Core.Interfaces;
 using RPL.Core.Settings.SMS;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPL.Infrastructure.Services
+namespace RPL.Infrastructure.IntegrationServices
 {
     public class SmsSender : ISmsSender
     {

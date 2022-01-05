@@ -3,7 +3,7 @@ using RPL.Core.Result;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RPL.Infrastructure.Interfaces
+namespace RPL.Infrastructure.Services.Interfaces
 {
     public interface IClinicService
     {

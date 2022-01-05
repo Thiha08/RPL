@@ -1,4 +1,4 @@
-﻿using RPL.Core.ProjectAggregate;
+﻿using RPL.Core.Entities;
 
 namespace RPL.Web.ViewModels
 {

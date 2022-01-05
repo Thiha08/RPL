@@ -1,6 +1,7 @@
-﻿using RPL.SharedKernel;
+﻿using RPL.Core.Entities;
+using RPL.SharedKernel;
 
-namespace RPL.Core.ProjectAggregate.Events
+namespace RPL.Core.Events
 {
     public class ToDoItemCompletedEvent : BaseDomainEvent
     {

@@ -1,7 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
-using RPL.Core.Interfaces;
 using RPL.Core.Result;
+using RPL.Infrastructure.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,11 +1,12 @@
 ﻿using Ardalis.GuardClauses;
-using RPL.Core.ProjectAggregate.Events;
+using RPL.Core.Constants;
+using RPL.Core.Events;
 using RPL.SharedKernel;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RPL.Core.ProjectAggregate
+namespace RPL.Core.Entities
 {
     public class Project : BaseEntity, IAggregateRoot
     {

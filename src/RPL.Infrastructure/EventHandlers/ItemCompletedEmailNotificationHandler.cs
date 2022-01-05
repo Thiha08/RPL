@@ -1,11 +1,11 @@
 ﻿using Ardalis.GuardClauses;
 using MediatR;
-using RPL.Core.Interfaces;
-using RPL.Core.ProjectAggregate.Events;
+using RPL.Core.Events;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RPL.Core.ProjectAggregate.Handlers
+namespace RPL.Infrastructure.EventHandlers
 {
     public class ItemCompletedEmailNotificationHandler : INotificationHandler<ToDoItemCompletedEvent>
     {

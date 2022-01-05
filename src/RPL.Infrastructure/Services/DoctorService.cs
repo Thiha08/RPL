@@ -4,7 +4,7 @@ using RPL.Core.DTOs.Doctors;
 using RPL.Core.Entities;
 using RPL.Core.Result;
 using RPL.Core.Specifications.Doctors;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;

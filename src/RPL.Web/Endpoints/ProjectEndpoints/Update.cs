@@ -1,6 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
-using RPL.Core.ProjectAggregate;
+using RPL.Core.Entities;
 using RPL.SharedKernel.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Threading;

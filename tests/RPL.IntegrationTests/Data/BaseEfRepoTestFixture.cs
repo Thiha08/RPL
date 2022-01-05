@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using RPL.Core.ProjectAggregate;
+using RPL.Core.Entities;
 using RPL.Infrastructure.Data;
 
 namespace RPL.IntegrationTests.Data

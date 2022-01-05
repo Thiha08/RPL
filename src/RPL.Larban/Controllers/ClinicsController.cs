@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.DTOs;
 using RPL.Core.Result;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

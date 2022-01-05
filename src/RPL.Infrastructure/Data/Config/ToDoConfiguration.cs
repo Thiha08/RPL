@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RPL.Core.ProjectAggregate;
+using RPL.Core.Entities;
 
 namespace RPL.Infrastructure.Data.Config
 {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using RPL.Core.Interfaces;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace RPL.Infrastructure.Services
+namespace RPL.Infrastructure.IntegrationServices
 {
     public class EmailSender : IEmailSender
     {

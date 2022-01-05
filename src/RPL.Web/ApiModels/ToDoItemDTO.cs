@@ -1,4 +1,4 @@
-﻿using RPL.Core.ProjectAggregate;
+﻿using RPL.Core.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace RPL.Web.ApiModels

@@ -1,5 +1,5 @@
-﻿using RPL.Core.ProjectAggregate;
-using RPL.Core.ProjectAggregate.Specifications;
+﻿using RPL.Core.Entities;
+using RPL.Core.Specifications;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

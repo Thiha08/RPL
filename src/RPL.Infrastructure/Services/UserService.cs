@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RPL.Core.Entities;
-using RPL.Core.Interfaces;
 using RPL.Core.Result;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
+using RPL.Infrastructure.Services.Interfaces;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;

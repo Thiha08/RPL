@@ -1,4 +1,5 @@
-﻿using RPL.Core.ProjectAggregate;
+﻿using RPL.Core.Constants;
+using RPL.Core.Entities;
 using Xunit;
 
 namespace RPL.UnitTests.Core.ProjectAggregate

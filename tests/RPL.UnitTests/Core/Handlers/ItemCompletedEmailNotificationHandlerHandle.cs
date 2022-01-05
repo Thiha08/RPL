@@ -1,8 +1,8 @@
 ﻿using Moq;
-using RPL.Core.Interfaces;
-using RPL.Core.ProjectAggregate;
-using RPL.Core.ProjectAggregate.Events;
-using RPL.Core.ProjectAggregate.Handlers;
+using RPL.Core.Entities;
+using RPL.Core.Events;
+using RPL.Infrastructure.EventHandlers;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

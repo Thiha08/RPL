@@ -2,7 +2,7 @@
 using RPL.Core.Entities;
 using System.Linq;
 
-namespace RPL.Core.ProjectAggregate.Specifications
+namespace RPL.Core.Specifications
 {
     public class ClinicsSearchSpec : Specification<Clinic>
     {

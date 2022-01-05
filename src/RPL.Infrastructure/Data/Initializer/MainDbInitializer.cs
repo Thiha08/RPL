@@ -31,5 +31,52 @@ namespace RPL.Infrastructure.Data.Initializer
                 new Patient { Name = "P. Yu Mon San", PhoneNumber = "959441022791", CreatedBy = "seed", UpdatedBy = "seed" }
             };
         }
+
+        public static List<Clinic> GetDummyClinics()
+        {
+            return new List<Clinic>
+            {
+                new Clinic
+                {
+                    ClinicName = "Aung Clinic - Baho Street",
+                    PhoneNumber = "959402288410",
+                    ClinicAddress = new Address { AddressBody = "215 Baho Street, Yangon", Latitude = 16.833063004159218, Longitude =  96.12319636412894 },
+                    CreatedBy = "seed",
+                    UpdatedBy = "seed"
+                },
+                new Clinic
+                {
+                    ClinicName = "Aung Clinic - Baho Street",
+                    PhoneNumber = "959402288410",
+                    ClinicAddress = new Address { AddressBody = "", Latitude = 0, Longitude = 0 },
+                    CreatedBy = "seed",
+                    UpdatedBy = "seed"
+                },
+                new Clinic
+                {
+                    ClinicName = "Aung Clinic - Baho Street",
+                    PhoneNumber = "959402288410",
+                    ClinicAddress = new Address { AddressBody = "", Latitude = 0, Longitude = 0 },
+                    CreatedBy = "seed",
+                    UpdatedBy = "seed"
+                },
+                new Clinic
+                {
+                    ClinicName = "Aung Clinic - Baho Street",
+                    PhoneNumber = "959402288410",
+                    ClinicAddress = new Address { AddressBody = "", Latitude = 0, Longitude = 0 },
+                    CreatedBy = "seed",
+                    UpdatedBy = "seed"
+                },
+                new Clinic
+                {
+                    ClinicName = "Aung Clinic - Baho Street",
+                    PhoneNumber = "959402288410",
+                    ClinicAddress = new Address { AddressBody = "", Latitude = 0, Longitude = 0 },
+                    CreatedBy = "seed",
+                    UpdatedBy = "seed"
+                },
+            };
+        }
     }
 }

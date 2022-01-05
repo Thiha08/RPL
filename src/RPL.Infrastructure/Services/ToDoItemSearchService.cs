@@ -1,14 +1,14 @@
-﻿using RPL.Core.Interfaces;
-using RPL.Core.ProjectAggregate;
-using RPL.Core.ProjectAggregate.Specifications;
+﻿using RPL.Core.Entities;
 using RPL.Core.Result;
+using RPL.Core.Specifications;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RPL.Core.Services
+namespace RPL.Infrastructure.Services
 {
     public class ToDoItemSearchService : IToDoItemSearchService
     {

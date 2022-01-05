@@ -1,7 +1,7 @@
-﻿using RPL.Core.ProjectAggregate.Events;
+﻿using RPL.Core.Events;
 using RPL.SharedKernel;
 
-namespace RPL.Core.ProjectAggregate
+namespace RPL.Core.Entities
 {
     public class ToDoItem : BaseEntity
     {

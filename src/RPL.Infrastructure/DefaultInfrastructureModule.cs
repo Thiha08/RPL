@@ -1,11 +1,12 @@
 ﻿using Autofac;
 using MediatR;
 using MediatR.Pipeline;
-using RPL.Core.Interfaces;
-using RPL.Core.ProjectAggregate;
+using RPL.Core.Entities;
 using RPL.Infrastructure.Data;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.IntegrationServices;
+using RPL.Infrastructure.IntegrationServices.Interfaces;
 using RPL.Infrastructure.Services;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Reflection;
@@ -78,8 +79,14 @@ namespace RPL.Infrastructure
                 .AsImplementedInterfaces();
             }
 
-            builder.RegisterType<EmailSender>().As<IEmailSender>().InstancePerLifetimeScope();
-            builder.RegisterType<SmsSender>().As<ISmsSender>().InstancePerLifetimeScope();
+            builder.RegisterType<EmailSender>()
+                 .As<IEmailSender>().InstancePerLifetimeScope();
+
+            builder.RegisterType<SmsSender>()
+                .As<ISmsSender>().InstancePerLifetimeScope();
+
+            builder.RegisterType<ToDoItemSearchService>()
+                .As<IToDoItemSearchService>().InstancePerLifetimeScope();
 
             builder.RegisterType<AuthenticationService>().As<IAuthenticationService>().InstancePerDependency();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();

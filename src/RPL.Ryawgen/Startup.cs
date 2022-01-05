@@ -56,6 +56,7 @@ namespace RPL.Ryawgen
             services.AddSwaggerConfigurations(swaggerSettings);
             services.AddLocalizationConfigurations();
             services.AddMvc().AddNewtonsoftJson();
+            services.AddRouting(options => options.LowercaseUrls = true);
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

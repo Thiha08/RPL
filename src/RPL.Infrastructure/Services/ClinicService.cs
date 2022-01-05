@@ -3,7 +3,7 @@ using AutoMapper;
 using RPL.Core.DTOs;
 using RPL.Core.Entities;
 using RPL.Core.Result;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;

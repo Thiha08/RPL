@@ -5,7 +5,7 @@ using RPL.Core.Filters;
 using RPL.Core.Result;
 using RPL.Core.Specifications;
 using RPL.Core.Specifications.Doctors;
-using RPL.Infrastructure.Interfaces;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;

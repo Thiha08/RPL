@@ -1,9 +1,9 @@
-﻿using RPL.Core.ProjectAggregate;
+﻿using RPL.Core.Entities;
 using RPL.Core.Result;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RPL.Core.Interfaces
+namespace RPL.Infrastructure.Services.Interfaces
 {
     public interface IToDoItemSearchService
     {

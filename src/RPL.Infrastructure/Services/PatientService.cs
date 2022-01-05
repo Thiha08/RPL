@@ -1,8 +1,8 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
 using RPL.Core.Entities;
-using RPL.Core.Interfaces;
 using RPL.Core.Result;
+using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System.Threading.Tasks;
 

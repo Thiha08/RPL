@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace RPL.Core.Interfaces
+namespace RPL.Infrastructure.IntegrationServices.Interfaces
 {
     public interface IEmailSender
     {
