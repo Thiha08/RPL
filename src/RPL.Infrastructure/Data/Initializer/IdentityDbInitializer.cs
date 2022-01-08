@@ -32,5 +32,16 @@ namespace RPL.Infrastructure.Data.Initializer
                 new ApplicationUser { UserName = "959441022791", FullName = "P. Yu Mon San", EmailConfirmed = true, PhoneNumber = "959441022791", IsResetPasswordUponLoginNeeded = false }
             };
         }
+
+        public static List<ApplicationUser> GetDummyDoctorUsers()
+        {
+            return new List<ApplicationUser>
+            {
+                new ApplicationUser { UserName = "959424432870", FullName = "P. Thiha", EmailConfirmed = true, PhoneNumber = "959424432870", IsResetPasswordUponLoginNeeded = false },
+                new ApplicationUser { UserName = "959756036447", FullName = "P. Ko Saw", EmailConfirmed = true, PhoneNumber = "959756036447", IsResetPasswordUponLoginNeeded = false },
+                new ApplicationUser { UserName = "959950129153", FullName = "P. Aye Myat Min", EmailConfirmed = true, PhoneNumber = "959950129153", IsResetPasswordUponLoginNeeded = false },
+                new ApplicationUser { UserName = "959441022791", FullName = "P. Yu Mon San", EmailConfirmed = true, PhoneNumber = "959441022791", IsResetPasswordUponLoginNeeded = false }
+            };
+        }
     }
 }

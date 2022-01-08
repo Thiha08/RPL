@@ -10,6 +10,8 @@ namespace RPL.Core.Result
 
         public string Message { get; set; }
 
+        public bool IsSuccess => Status == ResultStatus.Ok;
+
         private Result(ResultStatus status)
         {
             Status = status;

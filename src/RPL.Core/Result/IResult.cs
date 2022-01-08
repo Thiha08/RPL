@@ -4,6 +4,8 @@
     {
         ResultStatus Status { get; }
 
-        public string Message { get; set; }
+        string Message { get; set; }
+
+        bool IsSuccess { get; }
     }
 }
