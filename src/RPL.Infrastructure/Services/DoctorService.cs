@@ -45,6 +45,22 @@ namespace RPL.Infrastructure.Services
             return await _doctorRepository.AddAsync(newDoctor);
         }
 
+        public async Task<Result<long>> CreateDoctorAsync(DoctorDto doctorDto)
+        {
+            Guard.Against.Null(doctorDto, nameof(doctorDto));
+            Doctor doctor = await _doctorRepository.AddAsync(_mapper.Map<Doctor>(doctorDto));
+            return Result<long>.Ok(doctor.Id);
+        }
+
+        public async Task<IResult> DeleteDoctorAsync(long id)
+        {
+            Doctor doctor = await _doctorRepository.GetByIdAsync(id);
+            Guard.Against.Null(doctor, nameof(doctor));
+            doctor.Status = false;
+            await _doctorRepository.UpdateAsync(doctor);
+            return Result.Ok();
+        }
+
         public async Task<Result<IEnumerable<AvailableDoctorDto>>> GetAvailableDoctorsAsync()
         {
             var doctorSpec = new AvailableDoctorsSpec();
@@ -52,11 +68,45 @@ namespace RPL.Infrastructure.Services
             return Result<IEnumerable<AvailableDoctorDto>>.Ok(_mapper.Map<List<AvailableDoctorDto>>(availableDoctors));
         }
 
+        public async Task<Result<DoctorDto>> GetDoctorAsync(long id)
+        {
+            Doctor doctor = await _doctorRepository.GetByIdAsync(id);
+            Guard.Against.Null(doctor, nameof(doctor));
+            return Result<DoctorDto>.Ok(_mapper.Map<DoctorDto>(doctor));
+        }
+
+
+        public async Task<Result<IEnumerable<DoctorDto>>> GetDoctorsAsync()
+        {
+            List<Doctor> doctors = await _doctorRepository.ListAsync();
+            return Result<IEnumerable<DoctorDto>>.Ok(_mapper.Map<List<DoctorDto>>(doctors));
+        }
+
+
         public async Task<Result> UnassignFromClinicAsync(long id, long clinicId)
         {
             Doctor doctor = await _doctorRepository.GetByIdAsync(id);
             Guard.Against.Null(doctor, nameof(doctor));
             doctor.ClinicId = 0;
+            await _doctorRepository.UpdateAsync(doctor);
+            return Result.Ok();
+        }
+
+        public async Task<IResult> UpdateDoctorAsync(long id, DoctorDto doctorDto)
+        {
+            Doctor doctor = await _doctorRepository.GetByIdAsync(id);
+            Guard.Against.Null(doctor, nameof(doctor));
+
+            doctor.Name = doctorDto.Name;
+            doctor.PhoneNumber = doctorDto.PhoneNumber;
+            doctor.DateOfBirth = doctorDto.DateOfBirth;
+           
+            doctor.Address = new Address
+            {
+                AddressBody = doctorDto.Address?.AddressBody,
+                Latitude = doctorDto.Address?.Latitude ?? 0,
+                Longitude = doctorDto.Address?.Longitude ?? 0,
+            };
             await _doctorRepository.UpdateAsync(doctor);
             return Result.Ok();
         }

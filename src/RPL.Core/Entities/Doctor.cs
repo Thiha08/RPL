@@ -17,7 +17,7 @@ namespace RPL.Core.Entities
 
         public Address Address { get; set; }
 
-        public long ClinicId { get; set; }
+        public long? ClinicId { get; set; }
 
         public Clinic Clinic { get; set; }
 

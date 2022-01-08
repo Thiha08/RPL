@@ -12,8 +12,18 @@ namespace RPL.Infrastructure.Services.Interfaces
 
         Task<Result<Doctor>> CreateDoctorAsync(ApplicationUser model);
 
+        Task<Result<long>> CreateDoctorAsync(DoctorDto doctorDto);
+
+        Task<IResult> DeleteDoctorAsync(long id);
+
+        Task<Result<DoctorDto>> GetDoctorAsync(long id);
+
+        Task<Result<IEnumerable<DoctorDto>>> GetDoctorsAsync();
+
         Task<Result<IEnumerable<AvailableDoctorDto>>> GetAvailableDoctorsAsync();
 
         Task<Result> UnassignFromClinicAsync(long id, long clinicId);
+
+        Task<IResult> UpdateDoctorAsync(long id, DoctorDto doctorDto);
     }
 }
