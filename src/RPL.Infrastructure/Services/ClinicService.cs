@@ -54,7 +54,16 @@ namespace RPL.Infrastructure.Services
         {
             Clinic clinic = await _clinicRepository.GetByIdAsync(id);
             Guard.Against.Null(clinic, nameof(clinic));
-            await _clinicRepository.UpdateAsync(_mapper.Map<Clinic>(clinicDto));
+
+            clinic.ClinicName = clinicDto.ClinicName;
+            clinic.PhoneNumber = clinicDto.PhoneNumber;
+            clinic.ClinicAddress = new Address
+            {
+                AddressBody = clinicDto.ClinicAddress?.AddressBody,
+                Latitude = clinicDto.ClinicAddress?.Latitude ?? 0,
+                Longitude = clinicDto.ClinicAddress?.Longitude ?? 0,
+            };
+            await _clinicRepository.UpdateAsync(clinic);
             return Result.Ok();
         }
     }

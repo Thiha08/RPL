@@ -42,7 +42,7 @@ namespace RPL.Larban.Controllers
         ///
         /// </remarks>
         [HttpPost]
-        [ProducesResponseType(typeof(Result<ClinicDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<long>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateClinicAsync(ClinicDto clinicDto)
         {
             return Ok(await _clinicService.CreateClinicAsync(clinicDto));
