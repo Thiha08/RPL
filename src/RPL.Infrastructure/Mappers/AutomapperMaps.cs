@@ -14,6 +14,7 @@ namespace RPL.Infrastructure.Mappers
             CreateMap<Address, AddressDto>().IncludeAllDerived().ReverseMap();
             CreateMap<Doctor, AvailableDoctorDto>();
             CreateMap<Doctor, DoctorDto>().IncludeAllDerived().ReverseMap();
+            CreateMap<Patient, PatientDto>().IncludeAllDerived().ReverseMap();
         }
     }
 }

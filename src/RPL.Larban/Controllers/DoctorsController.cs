@@ -104,55 +104,9 @@ namespace RPL.Larban.Controllers
             return Ok(await _doctorService.DeleteDoctorAsync(id));
         }
 
+               
 
-        /// <summary>
-        /// Get available doctors
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /api/doctors/available
-        ///
-        /// </remarks>
-        [HttpGet("available")]
-        [ProducesResponseType(typeof(Result<IEnumerable<AvailableDoctorDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAvailableDoctorsAsync()
-        {
-            return Ok(await _doctorService.GetAvailableDoctorsAsync());
-        }
-
-        /// <summary>
-        /// Get Docotr by id
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /api/Doctors/5
-        ///
-        /// </remarks>
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Result<DoctorDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetDoctorAsync(long id)
-        {
-            return Ok(await _doctorService.GetDoctorAsync(id));
-        }
-
-        /// <summary>
-        /// Get Doctors
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /api/Doctors
-        ///
-        /// </remarks>
-        [HttpGet]
-        [ProducesResponseType(typeof(Result<IEnumerable<DoctorDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetDoctorsAsync()
-        {
-            return Ok(await _doctorService.GetDoctorsAsync());
-        }
-
+        
         /// <summary>
         /// Generate dummy doctors
         /// </summary>
@@ -185,6 +139,56 @@ namespace RPL.Larban.Controllers
 
             return Ok(createdDoctors);
         }
+
+        /// <summary>
+        /// Get available doctors
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/doctors/available
+        ///
+        /// </remarks>
+        [HttpGet("available")]
+        [ProducesResponseType(typeof(Result<IEnumerable<AvailableDoctorDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAvailableDoctorsAsync()
+        {
+            return Ok(await _doctorService.GetAvailableDoctorsAsync());
+        }
+
+        /// <summary>
+        /// Get Doctor by id
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/Doctors/5
+        ///
+        /// </remarks>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Result<DoctorDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetDoctorAsync(long id)
+        {
+            return Ok(await _doctorService.GetDoctorAsync(id));
+        }
+
+        /// <summary>
+        /// Get Doctors
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/Doctors
+        ///
+        /// </remarks>
+        [HttpGet]
+        [ProducesResponseType(typeof(Result<IEnumerable<DoctorDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetDoctorsAsync()
+        {
+            return Ok(await _doctorService.GetDoctorsAsync());
+        }
+
+
 
         /// <summary>
         /// Unassign doctor from clinic
