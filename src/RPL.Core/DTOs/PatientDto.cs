@@ -1,4 +1,6 @@
-﻿namespace RPL.Core.DTOs
+﻿using System;
+
+namespace RPL.Core.DTOs
 {
     public class PatientDto
     {
@@ -7,5 +9,9 @@
         public string Name { get; set; }
 
         public string PhoneNumber { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+
+        public AddressDto Address { get; set; }
     }
 }

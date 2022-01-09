@@ -14,6 +14,6 @@ namespace RPL.Core.DTOs.Doctors
 
         public AddressDto Address { get; set; }
 
-        public long ClinicId { get; set; }
+        
     }
 }
