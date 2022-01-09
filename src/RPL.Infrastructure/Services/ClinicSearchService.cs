@@ -41,7 +41,7 @@ namespace RPL.Infrastructure.Services
                 EndDateTime = DateTime.UtcNow.Date.AddDays(1).AddTicks(-1)
             };
             var scheduleSpec = new DoctorSchedulesByDateSpec(scheduleFilter);
-            var schedules = await _scheduleRepository.ListAsync(scheduleSpec);
+            List<DoctorSchedule> schedules = await _scheduleRepository.ListAsync(scheduleSpec);
 
             var clinicsNearbyDto = new List<ClinicNearbyDto>();
 
@@ -53,10 +53,13 @@ namespace RPL.Infrastructure.Services
                 var clinics = schedules.Where(x => clinicDoctorIds.Contains(x.DoctorId))
                     .Select(x => new ClinicNearbyDto
                     {
+                        ClinicId = clinic.Id,
+                        DoctorId = x.DoctorId,
+                        ScheduleId = x.Id,
                         ClinicName = clinic.ClinicName,
                         DoctorName = clinicDoctors.FirstOrDefault(d => d.Id == x.DoctorId)?.Name,
                         Address = clinic.ClinicAddress.AddressBody,
-                        Schedule = $"{x.ScheduleStartDateTime.ToTimeZoneTimeString("0:hh:mm TT")} ~ {x.ScheduleEndDateTime.ToTimeZoneTimeString("0:hh:mm TT")}",
+                        Schedule = $"{x.ScheduleStartDateTime.ToTimeZoneTimeString("hh:mm tt")} ~ {x.ScheduleEndDateTime.ToTimeZoneTimeString("hh:mm tt")}",
                         ScheduleStartDateTime = x.ScheduleStartDateTime.ToTimeZoneTime(),
                         ScheduleEndDateTime = x.ScheduleEndDateTime.ToTimeZoneTime()
                     }).ToList();

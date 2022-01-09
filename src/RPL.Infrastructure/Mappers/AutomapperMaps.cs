@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using RPL.Core.DTOs;
+using RPL.Core.DTOs.Bookings;
 using RPL.Core.DTOs.Doctors;
 using RPL.Core.Entities;
 
@@ -15,6 +16,7 @@ namespace RPL.Infrastructure.Mappers
             CreateMap<Doctor, AvailableDoctorDto>();
             CreateMap<Doctor, DoctorDto>().IncludeAllDerived().ReverseMap();
             CreateMap<Patient, PatientDto>().IncludeAllDerived().ReverseMap();
+            CreateMap<Booking, CreateBookingDto>().IncludeAllDerived().ReverseMap();
         }
     }
 }

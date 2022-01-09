@@ -31,5 +31,8 @@ namespace RPL.Core.Entities
 
         public Clinic Clinic { get; set; }
 
+        public long DoctorScheduleId { get; set; }
+
+      
     }
 }

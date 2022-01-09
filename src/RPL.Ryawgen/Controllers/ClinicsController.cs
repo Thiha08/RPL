@@ -14,7 +14,7 @@ namespace RPL.Ryawgen.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
-    [Authorize]
+    [AllowAnonymous]
     public class ClinicsController : BaseController
     {
         private readonly IClinicSearchService _clinicSearchService;
