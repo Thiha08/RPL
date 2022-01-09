@@ -49,13 +49,22 @@ namespace RPL.Ryawgen
             services.AddIdentityDbContext(identityDatabaseConnectionString);
             services.AddMainDbContext(mainDatabaseConnectionString);
 
+            services.AddHttpClient();
+
             services.AddIdentitySystemConfigurations();
+
             services.AddIdentityAuthenticationConfigurations(identitySettings);
+
             services.AddIdentityGlobalAuthorizationConfigurations(identitySettings.Scope);
+
             services.AddAutoMapperConfigurations();
+
             services.AddSwaggerConfigurations(swaggerSettings);
+
             services.AddLocalizationConfigurations();
+
             services.AddMvc().AddNewtonsoftJson();
+
             services.AddRouting(options => options.LowercaseUrls = true);
         }
 

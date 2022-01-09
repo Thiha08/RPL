@@ -20,6 +20,7 @@ namespace RPL.Infrastructure.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IStringLocalizer<AuthenticationService> _stringLocalizer;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IdentitySettings _identitySettings;
@@ -28,6 +29,7 @@ namespace RPL.Infrastructure.Services
         private readonly ISmsSender _smsSender;
 
         public AuthenticationService(
+            IHttpClientFactory httpClientFactory,
             IStringLocalizer<AuthenticationService> stringLocalizer,
             UserManager<ApplicationUser> userManager,
             IOptions<IdentitySettings> identitySettingsAccessor,
@@ -35,6 +37,7 @@ namespace RPL.Infrastructure.Services
             IDoctorService doctorService,
             ISmsSender smsSender)
         {
+            _httpClientFactory = httpClientFactory;
             _stringLocalizer = stringLocalizer;
             _userManager = userManager;
             _identitySettings = identitySettingsAccessor.Value;
@@ -46,7 +49,8 @@ namespace RPL.Infrastructure.Services
         public async Task<Result<RefreshTokenDto>> RefreshTokenAsync(Core.DTOs.RefreshTokenRequest model)
         {
             // discover endpoints from metadata
-            var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
+
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
                 Address = _identitySettings.IdentityServerUrl,
@@ -56,31 +60,29 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError)
-                return Result<RefreshTokenDto>.BadRequest(disco.Error);
+            if (disco.IsError) throw disco.Exception;
 
-            var tokenResponse = await client.RequestRefreshTokenAsync(new IdentityModel.Client.RefreshTokenRequest
-            {
-                Address = disco.TokenEndpoint,
+            var tokenResponse = await client.RequestRefreshTokenAsync(
+                new IdentityModel.Client.RefreshTokenRequest
+                {
+                    Address = disco.TokenEndpoint,
+                    
+                    ClientId = _identitySettings.ClientId,
+                    ClientSecret = _identitySettings.ClientSecret,
+                    Scope = _identitySettings.Scope,
+                    RefreshToken = model.RefreshToken
+                });
 
-                ClientId = _identitySettings.ClientId,
-                ClientSecret = _identitySettings.ClientSecret,
-                Scope = _identitySettings.Scope + " offline_access",
-
-                RefreshToken = model.RefreshToken
-            });
-
-            if (tokenResponse.IsError)
-                return Result<RefreshTokenDto>.BadRequest(tokenResponse.Error);
-
-            return Result<RefreshTokenDto>.Ok(new RefreshTokenDto
+            if (tokenResponse.IsError) throw tokenResponse.Exception;
+           
+            return new RefreshTokenDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
                 TokenType = tokenResponse.TokenType,
                 RefreshToken = tokenResponse.RefreshToken,
                 Scope = tokenResponse.Scope
-            });
+            };
         }
 
         public async Task<IResult> RegisterAsync(RegistrationRequest model, string role)
@@ -171,10 +173,10 @@ namespace RPL.Infrastructure.Services
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-                return Result<SignInDto>.BadRequest(_stringLocalizer["Phone number or password is wrong."].Value);
+                throw new Exception(_stringLocalizer["Phone number or password is wrong."].Value);
 
             // discover endpoints from metadata
-            var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
                 Address = _identitySettings.IdentityServerUrl,
@@ -184,32 +186,30 @@ namespace RPL.Infrastructure.Services
                 }
             });
 
-            if (disco.IsError)
-                return Result<SignInDto>.BadRequest(disco.Error);
+            if (disco.IsError) throw disco.Exception;
 
-            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            var tokenClient = new TokenClient(client, new TokenClientOptions
             {
                 Address = disco.TokenEndpoint,
-
                 ClientId = _identitySettings.ClientId,
                 ClientSecret = _identitySettings.ClientSecret,
-                Scope = _identitySettings.Scope + " offline_access",
-
-                UserName = model.PhoneNumber,
-                Password = model.Password
             });
 
-            if (tokenResponse.IsError)
-                return Result<SignInDto>.BadRequest(tokenResponse.Error);
+            var tokenResponse = await tokenClient.RequestPasswordTokenAsync(
+                model.PhoneNumber, 
+                model.Password, 
+                _identitySettings.Scope);
 
-            return Result<SignInDto>.Ok(new SignInDto
+            if (tokenResponse.IsError) throw tokenResponse.Exception;
+
+            return new SignInDto
             {
                 AccessToken = tokenResponse.AccessToken,
                 ExpiresIn = tokenResponse.ExpiresIn,
                 TokenType = tokenResponse.TokenType,
                 RefreshToken = tokenResponse.RefreshToken,
                 Scope = tokenResponse.Scope
-            });
+            };
         }
 
         public Task<IResult> SignOutAsync()
@@ -222,19 +222,19 @@ namespace RPL.Infrastructure.Services
             var user = await _userManager.FindByNameAsync(model.PhoneNumber);
 
             if (user == null)
-                return Result.BadRequest(_stringLocalizer["User account does not exist."].Value);
+                throw new Exception(_stringLocalizer["User account does not exist."].Value);
 
             if (user.Status == false)
-                return Result.BadRequest(_stringLocalizer["User account is deactivated."].Value);
-
+                throw new Exception(_stringLocalizer["User account is deactivated."].Value);
+            
             if (user.PhoneNumberConfirmed == true)
-                return Result.BadRequest(_stringLocalizer["User account is alrady verified."].Value);
+                throw new Exception(_stringLocalizer["User account is alrady verified."].Value);
 
             if (user.VerificationCode != model.VerificationCode)
-                return Result.BadRequest(_stringLocalizer["Invalid verification code."].Value);
+                throw new Exception(_stringLocalizer["Invalid verification code."].Value);
 
             if (user.VerificationCodeExpiryDate < DateTime.UtcNow)
-                return Result.BadRequest(_stringLocalizer["Expired verification code."].Value);
+                throw new Exception(_stringLocalizer["Expired verification code."].Value);
 
             user.PhoneNumberConfirmed = true;
             await _userManager.UpdateAsync(user);

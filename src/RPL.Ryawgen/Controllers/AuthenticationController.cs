@@ -29,13 +29,13 @@ namespace RPL.Ryawgen.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/RefreshToken
+        ///     POST /api/authentication/refreshToken
         ///     {
         ///        "refreshToken": "..."
         ///     }
         ///
         /// </remarks>
-        [HttpPost("RefreshToken")]
+        [HttpPost("refreshToken")]
         [ProducesResponseType(typeof(Result<RefreshTokenDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
         {
@@ -48,7 +48,7 @@ namespace RPL.Ryawgen.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/Register
+        ///     POST /api/authentication/register
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///        "password": "MyPassword123!",
@@ -58,7 +58,7 @@ namespace RPL.Ryawgen.Controllers
         ///     }
         ///
         /// </remarks>
-        [HttpPost("Register")]
+        [HttpPost("register")]
         [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] RegistrationRequest request)
         {
@@ -71,13 +71,13 @@ namespace RPL.Ryawgen.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/ResendVerificationCode
+        ///     POST /api/authentication/resendVerificationCode
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///     }
         ///
         /// </remarks>
-        [HttpPost("ResendVerificationCode")]
+        [HttpPost("resendVerificationCode")]
         [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> ResendVerificationCodeAsync([FromBody] VerificationCodeRequest request)
         {
@@ -90,14 +90,14 @@ namespace RPL.Ryawgen.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/SignIn
+        ///     POST /api/authentication/signIn
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
-        ///        "password": "welcome123"
+        ///        "password": "MyPassword123!"
         ///     }
         ///
         /// </remarks>
-        [HttpPost("SignIn")]
+        [HttpPost("signIn")]
         [ProducesResponseType(typeof(Result<SignInDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
         {
@@ -110,14 +110,14 @@ namespace RPL.Ryawgen.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Authentication/Verify
+        ///     POST /api/authentication/verify
         ///     {
         ///        "phoneNumber": "09424432870", // Phone number starts with '09'
         ///        "verificationCode": "123456"  // six digits number 
         ///     }
         ///
         /// </remarks>
-        [HttpPost("Verify")]
+        [HttpPost("verify")]
         [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> VerifyAsync([FromBody] VerificationRequest request)
         {
