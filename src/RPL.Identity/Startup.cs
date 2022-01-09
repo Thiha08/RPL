@@ -71,7 +71,7 @@ namespace RPL.Identity
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            InitializeDatabase(app);
+            // InitializeDatabase(app); // Run when do need to reset identity server resources
 
             if (env.IsDevelopment())
             {
@@ -113,49 +113,86 @@ namespace RPL.Identity
                 var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 context.Database.Migrate();
 
-                if (context.Clients.Any())
-                {
-                    foreach (var client in context.Clients)
-                    {
-                        context.Clients.Remove(client);
-                    }
-                    context.SaveChanges();
-                }
+                ResetIdentityResources(context, identityConfiguration);
 
-                foreach (var client in identityConfiguration.Clients)
-                {
-                    context.Clients.Add(client.ToEntity());
-                }
+                ResetApiResources(context, identityConfiguration);
 
-                context.SaveChanges();
+                ResetApiScopes(context, identityConfiguration);
 
-                if (!context.IdentityResources.Any())
-                {
-                    foreach (var resource in identityConfiguration.IdentityResources)
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiScopes.Any())
-                {
-                    foreach (var resource in identityConfiguration.ApiScopes)
-                    {
-                        context.ApiScopes.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiResources.Any())
-                {
-                    foreach (var resource in identityConfiguration.ApiResources)
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
+                ResetClients(context, identityConfiguration);
             }
+        }
+
+        private void ResetIdentityResources(ConfigurationDbContext context, IdentityConfiguration configuration)
+        {
+            if (context.IdentityResources.Any())
+            {
+                foreach (var entity in context.IdentityResources)
+                {
+                    context.IdentityResources.Remove(entity);
+                }
+                context.SaveChanges();
+            }
+
+            foreach (var entity in configuration.IdentityResources)
+            {
+                context.IdentityResources.Add(entity.ToEntity());
+            }
+            context.SaveChanges();
+        }
+
+        private void ResetApiResources(ConfigurationDbContext context, IdentityConfiguration configuration)
+        {
+            if (context.ApiResources.Any())
+            {
+                foreach (var entity in context.ApiResources)
+                {
+                    context.ApiResources.Remove(entity);
+                }
+                context.SaveChanges();
+            }
+
+            foreach (var entity in configuration.ApiResources)
+            {
+                context.ApiResources.Add(entity.ToEntity());
+            }
+            context.SaveChanges();
+        }
+
+        private void ResetApiScopes(ConfigurationDbContext context, IdentityConfiguration configuration)
+        {
+            if (context.ApiScopes.Any())
+            {
+                foreach (var entity in context.ApiScopes)
+                {
+                    context.ApiScopes.Remove(entity);
+                }
+                context.SaveChanges();
+            }
+
+            foreach (var entity in configuration.ApiScopes)
+            {
+                context.ApiScopes.Add(entity.ToEntity());
+            }
+            context.SaveChanges();
+        }
+
+        private void ResetClients(ConfigurationDbContext context, IdentityConfiguration configuration)
+        {
+            if (context.Clients.Any())
+            {
+                foreach (var entity in context.Clients)
+                {
+                    context.Clients.Remove(entity);
+                }
+                context.SaveChanges();
+            }
+
+            foreach (var entity in configuration.Clients)
+            {
+                context.Clients.Add(entity.ToEntity());
+            }
+            context.SaveChanges();
         }
     }
 }

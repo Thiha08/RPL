@@ -2,7 +2,6 @@
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using static IdentityServer4.IdentityServerConstants;
 
 namespace RPL.Identity
 {
@@ -16,7 +15,7 @@ namespace RPL.Identity
         }
 
         public IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[]
+            new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
@@ -25,7 +24,7 @@ namespace RPL.Identity
 
 
         public IEnumerable<ApiScope> ApiScopes =>
-            new ApiScope[]
+            new List<ApiScope>
             {
                 new ApiScope(Configuration["RyawgenAppIdentitySettings:Scope"]),
                 new ApiScope(Configuration["ParamanAppIdentitySettings:Scope"]),
@@ -33,122 +32,133 @@ namespace RPL.Identity
             };
 
         public IEnumerable<ApiResource> ApiResources =>
-            new ApiResource[]
+            new List<ApiResource>
             {
-                new ApiResource(Configuration["RyawgenAppIdentitySettings:Scope"], Configuration["RyawgenAppIdentitySettings:Name"])
+                new ApiResource(Configuration["RyawgenAppIdentitySettings:Scope"])
                 {
-                    Scopes = new List<string>{ Configuration["RyawgenAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) },
-                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
-                },
+                    Scopes = new List<string> 
+                    { 
+                        Configuration["RyawgenAppIdentitySettings:Scope"] 
+                    },
+                    
+                    ApiSecrets = new List<Secret>
+                    { 
+                        new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) 
+                    },
 
-                new ApiResource(Configuration["ParamanAppIdentitySettings:Scope"], Configuration["ParamanAppIdentitySettings:Name"])
-                {
-                    Scopes = new List<string>{ Configuration["ParamanAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256()) },
-                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
+                    UserClaims = new List<string>
+                    {
+                        JwtClaimTypes.Name
+                    }
                 },
-
-                new ApiResource(Configuration["LarbanAppIdentitySettings:Scope"], Configuration["LarbanAppIdentitySettings:Name"])
+                
+                new ApiResource(Configuration["ParamanAppIdentitySettings:Scope"])
                 {
-                    Scopes = new List<string>{ Configuration["LarbanAppIdentitySettings:Scope"] },
-                    ApiSecrets = { new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256()) },
-                    UserClaims = { JwtClaimTypes.Role, JwtClaimTypes.Name }
-                }
+                    Scopes = new List<string> 
+                    { 
+                        Configuration["ParamanAppIdentitySettings:Scope"] 
+                    },
+
+                    ApiSecrets = new List<Secret>
+                    { 
+                        new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256()) 
+                    },
+
+                    UserClaims = new List<string>
+                    {
+                        JwtClaimTypes.Name
+                    }
+                },
+                
+                new ApiResource(Configuration["LarbanAppIdentitySettings:Scope"])
+                {
+                    Scopes = new List<string> 
+                    { 
+                        Configuration["LarbanAppIdentitySettings:Scope"] 
+                    },
+
+                    ApiSecrets = new List<Secret>
+                    { 
+                        new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256()) 
+                    },
+
+                    UserClaims = new List<string>
+                    {
+                        JwtClaimTypes.Name
+                    }
+                },
             };
 
         public IEnumerable<Client> Clients =>
-            new Client[]
+            new List<Client>
             {
                 new Client
                 {
                     ClientId = Configuration["RyawgenAppIdentitySettings:ClientId"],
-                    ClientName = Configuration["RyawgenAppIdentitySettings:Name"],
-                    ClientSecrets = { new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256()) },
 
+                    // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret(Configuration["RyawgenAppIdentitySettings:ClientSecret"].Sha256())
+                    },
+
+                    // scopes that client has access to
+                    AllowedScopes = { Configuration["RyawgenAppIdentitySettings:Scope"] },
                     AccessTokenLifetime = 259200, // Three Days
                     SlidingRefreshTokenLifetime = 2592000, // One Month
                     AbsoluteRefreshTokenLifetime = 31536000, // One Year
-                    AllowOfflineAccess = true, // For refresh token.
+                    AllowOfflineAccess = true,
                     RefreshTokenExpiration = TokenExpiration.Sliding,
-                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
-
-                    AllowedScopes =
-                    {
-                        StandardScopes.OfflineAccess,
-                        Configuration["RyawgenAppIdentitySettings:Scope"]
-                    },
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly
                 },
 
                 new Client
                 {
                     ClientId = Configuration["ParamanAppIdentitySettings:ClientId"],
-                    ClientName = Configuration["ParamanAppIdentitySettings:Name"],
-                    ClientSecrets = { new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256()) },
 
+                    // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret(Configuration["ParamanAppIdentitySettings:ClientSecret"].Sha256())
+                    },
+
+                    // scopes that client has access to
+                    AllowedScopes = { Configuration["ParamanAppIdentitySettings:Scope"] },
                     AccessTokenLifetime = 259200, // Three Days
                     SlidingRefreshTokenLifetime = 2592000, // One Month
                     AbsoluteRefreshTokenLifetime = 31536000, // One Year
-                    AllowOfflineAccess = true, // For refresh token.
+                    AllowOfflineAccess = true,
                     RefreshTokenExpiration = TokenExpiration.Sliding,
-                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
-
-                    AllowedScopes =
-                    {
-                        StandardScopes.OfflineAccess,
-                        Configuration["ParamanAppIdentitySettings:Scope"]
-                    },
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly
                 },
 
                 new Client
                 {
                     ClientId = Configuration["LarbanAppIdentitySettings:ClientId"],
-                    ClientName = Configuration["LarbanAppIdentitySettings:Name"],
-                    ClientSecrets = { new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.Code,
-                    AccessTokenLifetime = 3600, // default is 60 minutes
-                    SlidingRefreshTokenLifetime = 43200, // 12 hours
-                    AbsoluteRefreshTokenLifetime = 86400, // 1 day
-                    AllowOfflineAccess = true, // For refresh token.
+                    // no interactive user, use the clientid/secret for authentication
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret(Configuration["LarbanAppIdentitySettings:ClientSecret"].Sha256())
+                    },
+
+                    // scopes that client has access to
+                    AllowedScopes = { Configuration["LarbanAppIdentitySettings:Scope"] },
+                    AccessTokenLifetime = 259200, // Three Days
+                    SlidingRefreshTokenLifetime = 2592000, // One Month
+                    AbsoluteRefreshTokenLifetime = 31536000, // One Year
+                    AllowOfflineAccess = true,
                     RefreshTokenExpiration = TokenExpiration.Sliding,
-                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
-
-                    AccessTokenType = AccessTokenType.Reference,
-                    RequireConsent = false,
-                    RequireClientSecret = false,
-                    RequirePkce = true,
-                    AlwaysIncludeUserClaimsInIdToken = true,
-                    AllowAccessTokensViaBrowser = true,
-
-                    RedirectUris =
-                    {
-                        { $"{Configuration["LarbanAppIdentitySettings:DomainName"]}" },
-                        { $"{Configuration["LarbanAppIdentitySettings:DomainName"]}/silent-renew.html" }
-                    },
-
-                    PostLogoutRedirectUris =
-                    {
-                        { $"{Configuration["LarbanAppIdentitySettings:DomainName"]}/unauthorized" },
-                        { $"{Configuration["LarbanAppIdentitySettings:DomainName"]}" },
-                    },
-
-                    AllowedCorsOrigins =
-                    {
-                        { $"{Configuration["LarbanAppIdentitySettings:DomainName"]}" },
-                    },
-
-                    AllowedScopes =
-                    {
-                        StandardScopes.OpenId,
-                        StandardScopes.Profile,
-                        StandardScopes.Email,
-                        StandardScopes.OfflineAccess,
-                        "role",
-                        Configuration["LarbanAppIdentitySettings:Scope"]
-                    },
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly
                 },
             };
     }

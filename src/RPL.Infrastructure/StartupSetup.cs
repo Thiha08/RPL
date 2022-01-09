@@ -1,9 +1,7 @@
 ﻿using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -13,6 +11,7 @@ using RPL.Core.Settings.Swagger;
 using RPL.Infrastructure.Data;
 using RPL.Infrastructure.Mappers;
 using RPL.Infrastructure.Middlewares;
+using System;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -75,22 +74,43 @@ namespace RPL.Infrastructure
         public static void AddIdentityAuthenticationConfigurations(this IServiceCollection services, IdentitySettings settings)
         {
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                    .AddIdentityServerAuthentication(options =>
-                    {
-                        options.Authority = settings.IdentityServerUrl;
-                        options.RequireHttpsMetadata = false;
-                        options.ApiName = settings.Scope;
-                        options.ApiSecret = settings.ClientSecret;
-                    });
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = settings.IdentityServerUrl;
+                    options.RequireHttpsMetadata = false;
+                    options.ApiName = settings.Scope;
+                    options.ApiSecret = settings.ClientSecret;
+
+                    options.EnableCaching = true;
+                    options.CacheDuration = TimeSpan.FromDays(3);
+                });
         }
 
         public static void AddIdentityGlobalAuthorizationConfigurations(this IServiceCollection services, params string[] scopes)
         {
-            services.AddMvcCore(options =>
-            {
-                var policy = ScopePolicy.Create(scopes);
-                options.Filters.Add(new AuthorizeFilter(policy));
-            }).AddAuthorization();
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("myPolicy", builder =>
+            //    {
+            //        // require scope1
+            //        builder.RequireScope(scopes);
+            //    });
+            //});
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("ApiScope", policy =>
+            //    {
+            //        policy.RequireAuthenticatedUser();
+            //        policy.RequireClaim("scope", scopes);
+            //    });
+            //});
+
+            //services.AddMvcCore(options =>
+            //{
+            //    var policy = ScopePolicy.Create(scopes);
+            //    options.Filters.Add(new AuthorizeFilter(policy));
+            //}).AddAuthorization();
         }
 
         public static void AddAutoMapperConfigurations(this IServiceCollection services) =>
