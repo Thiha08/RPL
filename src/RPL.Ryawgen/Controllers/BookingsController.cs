@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.DTOs.Bookings;
@@ -12,29 +13,28 @@ namespace RPL.Ryawgen.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
-    [AllowAnonymous]
+    [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     public class BookingsController : BaseController
     {
         private readonly IBookingService _bookingService;
-
-        public BookingsController(IBookingService bookingService)
+        
+        public BookingsController(
+            IBookingService bookingService,
+            IPatientService patientService
+            ) : base(patientService)
         {
             _bookingService = bookingService;
         }
 
         /// <summary>
-        /// Create Booking
+        /// Create booking
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
         ///     POST /api/bookings
         ///     {
-        ///        "clinicId": 1,
-        ///        "scheduleId": 3,
-        ///        "doctorId": 4,
-        ///        "patientId": 1
-        ///        
+        ///        "scheduleId": 3
         ///     }
         ///
         /// </remarks>
@@ -42,42 +42,41 @@ namespace RPL.Ryawgen.Controllers
         [ProducesResponseType(typeof(Result<BookingInformationDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateBookingAsync(CreateBookingDto bookingDto)
         {
-            long bookingId = await _bookingService.CreateBookingAsync(bookingDto);
-            return Ok(await _bookingService.GetBookingInformationAsync(bookingId));
+            long bookingId = await _bookingService.CreateBookingAsync(currentPatientInfo.PatientId, bookingDto);
+            return Ok(await _bookingService.GetBookingInformationAsync(currentPatientInfo.PatientId, bookingId));
         }
 
         /// <summary>
-        /// Get Booking Information
+        /// Get booking information
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/bookings/information/5
+        ///     GET /api/bookings/5/information/
         ///
         /// </remarks>
-        [HttpGet("information/{id}")]
+        [HttpGet("{id}/information")]
         [ProducesResponseType(typeof(Result<BookingInformationDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBookingInformationAsync(long id)
         {
-            return Ok(await _bookingService.GetBookingInformationAsync(id));
+            return Ok(await _bookingService.GetBookingInformationAsync(currentPatientInfo.PatientId, id));
         }
 
 
         /// <summary>
-        /// Confirm Booking
+        /// Confirm booking
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/bookings/confirm/5
+        ///     PUT api/bookings/5/confirm
         ///     {
         ///        "bookingId": 5,
-        ///        "Description": "This is Description for confirmation", 
-        ///        
+        ///        "description": "This is Description for confirmation"
         ///     }
         ///
         /// </remarks>
-        [HttpPut("confirm/{id}")]
+        [HttpPut("{id}/confirm")]
         [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> ConfirmBookingAsync(long id, ConfirmBookingDto confirmBookingDto)
         {
@@ -86,25 +85,24 @@ namespace RPL.Ryawgen.Controllers
                 return Ok(Result.BadRequest());
             }
 
-            return Ok(await _bookingService.ConfirmBookingAsync(id, confirmBookingDto));
+            return Ok(await _bookingService.ConfirmBookingAsync(currentPatientInfo.PatientId, confirmBookingDto));
         }
 
 
         /// <summary>
-        /// Cancel Booking
+        /// Cancel booking
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/bookings/cancel/5
+        ///     PUT api/bookings/5/cancel
         ///     {
         ///        "bookingId": 5,
-        ///        "Description": "This is Description for cancel", 
-        ///        
+        ///        "Description": "This is Description for cancel"
         ///     }
         ///
         /// </remarks>
-        [HttpPut("cancel/{id}")]
+        [HttpPut("{id}/cancel")]
         [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> CancelBookingAsync(long id, CancelBookingDto cancelBookingDto)
         {
@@ -113,7 +111,7 @@ namespace RPL.Ryawgen.Controllers
                 return Ok(Result.BadRequest());
             }
 
-            return Ok(await _bookingService.CancelBookingAsync(id, cancelBookingDto));
+            return Ok(await _bookingService.CancelBookingAsync(currentPatientInfo.PatientId, cancelBookingDto));
         }
     }
 }

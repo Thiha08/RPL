@@ -6,9 +6,9 @@ using RPL.Core.Entities;
 using RPL.Core.Extensions;
 using RPL.Core.Result;
 using RPL.Core.Specifications.Bookings;
+using RPL.Core.Specifications.Doctors;
 using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,65 +18,84 @@ namespace RPL.Infrastructure.Services
     {
         private readonly IRepository<Booking> _bookingRepository;
         private readonly IReadRepository<DoctorSchedule> _scheduleRepository;
+        private readonly IReadRepository<Doctor> _doctorRepository;
         private readonly IMapper _mapper;
 
         public BookingService(
             IRepository<Booking> bookingRepository,
             IReadRepository<DoctorSchedule> scheduleRepository,
+            IReadRepository<Doctor> doctorRepository,
             IMapper mapper)
         {
             _bookingRepository = bookingRepository;
-            _mapper = mapper;
             _scheduleRepository = scheduleRepository;
+            _doctorRepository = doctorRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Result<long>> CreateBookingAsync(CreateBookingDto bookingDto)
+        public async Task<Result<long>> CreateBookingAsync(long patientId, CreateBookingDto bookingDto)
         {
             Guard.Against.Null(bookingDto, nameof(bookingDto));
-            Booking booking = _mapper.Map<Booking>(bookingDto);
-            booking.BookingNumber = 1; // hardcode for now
-            booking.BookingStatus = BookingStatus.Pending;
-            booking.DoctorScheduleId = bookingDto.ScheduleId;
+
+            Doctor doctor = await _doctorRepository.GetBySpecAsync(new DoctorByScheduleIdSpec(bookingDto.ScheduleId));
+
+            Guard.Against.Null(doctor, nameof(doctor));
+
+            var booking = new Booking
+            {
+                BookingNumber = 1, // hardcode for now
+                BookingStatus = BookingStatus.Pending,
+                PatientId = patientId,
+                DoctorScheduleId = bookingDto.ScheduleId,
+                ClinicId = doctor.ClinicId.Value,
+                DoctorId = doctor.Id
+            };
 
             await _bookingRepository.AddAsync(booking);
-
             return booking.Id;
-
         }
 
-        public async Task<Result<BookingInformationDto>> GetBookingInformationAsync(long bookingId)
+        public async Task<Result<BookingInformationDto>> GetBookingInformationAsync(long patientId, long bookingId)
         {
-            Booking booking = await _bookingRepository.GetBySpecAsync(new BookingInformationSpec(bookingId));
-            Guard.Against.Null(booking, nameof(booking));
-            var bookingInfo = new BookingInformationDto();
-            bookingInfo.Id = booking.Id;
-            bookingInfo.BookingNumber = booking.BookingNumber;
-            bookingInfo.ClinicName = booking.Clinic.ClinicName;
-            bookingInfo.DoctorName = booking.Doctor.Name;
+            Booking booking = await _bookingRepository.GetBySpecAsync(new BookingInformationSpec(patientId, bookingId));
 
-            var schedule = booking.Doctor.DoctorSchedule.FirstOrDefault();
-            bookingInfo.Schedule = $"{schedule.ScheduleStartDateTime.ToTimeZoneTimeString("hh:mm tt")} ~ {schedule.ScheduleEndDateTime.ToTimeZoneTimeString("hh:mm tt")}";
+            Guard.Against.Null(booking, nameof(booking));
+
+            DoctorSchedule schedule = booking.Doctor.DoctorSchedule.FirstOrDefault();
+
+            Guard.Against.Null(schedule, nameof(schedule));
+
+            var bookingInfo = new BookingInformationDto
+            {
+                Id = booking.Id,
+                BookingNumber = booking.BookingNumber,
+                ClinicName = booking.Clinic.ClinicName,
+                DoctorName = booking.Doctor.Name,
+                Schedule = $"{schedule.ScheduleStartDateTime.ToTimeZoneTimeString("hh:mm tt")} ~ {schedule.ScheduleEndDateTime.ToTimeZoneTimeString("hh:mm tt")}"
+            };
+
             return bookingInfo;
         }
 
-        public async Task<IResult> ConfirmBookingAsync(long id, ConfirmBookingDto confirmBookingDto)
+        public async Task<IResult> ConfirmBookingAsync(long patientId, ConfirmBookingDto confirmBookingDto)
         {
-            Booking booking = await _bookingRepository.GetByIdAsync(id);
+            Booking booking = await _bookingRepository.GetBySpecAsync(new PatientBookingByIdSpec(patientId, confirmBookingDto.BookingId));
+
             Guard.Against.Null(booking, nameof(booking));
 
-            booking.Id = confirmBookingDto.BookingId;
             booking.Description = confirmBookingDto.Description;
             booking.BookingStatus = BookingStatus.Confirmed;
+            
             await _bookingRepository.UpdateAsync(booking);
             return Result.Ok();
         }
 
-        public async Task<IResult> CancelBookingAsync(long id, CancelBookingDto cancelBookingDto)
+        public async Task<IResult> CancelBookingAsync(long patientId, CancelBookingDto cancelBookingDto)
         {
-            Booking booking = await _bookingRepository.GetByIdAsync(id);
+            Booking booking = await _bookingRepository.GetBySpecAsync(new PatientBookingByIdSpec(patientId, cancelBookingDto.BookingId));
+            
             Guard.Against.Null(booking, nameof(booking));
 
-            booking.Id = cancelBookingDto.BookingId;
             booking.Description = cancelBookingDto.Description;
             booking.BookingStatus = BookingStatus.Cancelled;
 

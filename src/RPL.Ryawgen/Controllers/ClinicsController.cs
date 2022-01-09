@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RPL.Core.DTOs;
@@ -14,12 +15,15 @@ namespace RPL.Ryawgen.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
-    [AllowAnonymous]
+    [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     public class ClinicsController : BaseController
     {
         private readonly IClinicSearchService _clinicSearchService;
 
-        public ClinicsController(IClinicSearchService clinicSearchService)
+        public ClinicsController(
+            IClinicSearchService clinicSearchService,
+            IPatientService patientService)
+            : base(patientService)
         {
             _clinicSearchService = clinicSearchService;
         }

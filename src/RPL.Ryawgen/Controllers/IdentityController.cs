@@ -1,7 +1,7 @@
 ﻿using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RPL.Infrastructure.Services.Interfaces;
 using System.Linq;
 
 namespace RPL.Ryawgen.Controllers
@@ -13,6 +13,12 @@ namespace RPL.Ryawgen.Controllers
     [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     public class IdentityController : BaseController
     {
+        public IdentityController(IPatientService patientService)
+            : base(patientService)
+        {
+
+        }
+
         /// <summary>
         /// Test identity server 4 auth
         /// </summary>

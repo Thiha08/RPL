@@ -3,6 +3,7 @@ using AutoMapper;
 using RPL.Core.DTOs;
 using RPL.Core.Entities;
 using RPL.Core.Result;
+using RPL.Core.Specifications.Patients;
 using RPL.Infrastructure.Services.Interfaces;
 using RPL.SharedKernel.Interfaces;
 using System.Collections.Generic;
@@ -56,6 +57,13 @@ namespace RPL.Infrastructure.Services
             Patient patient = await _patientRepository.GetByIdAsync(id);
             Guard.Against.Null(patient, nameof(patient));
             return Result<PatientDto>.Ok(_mapper.Map<PatientDto>(patient));
+        }
+
+        public async Task<Result<Patient>> GetPatientByUserIdAsync(string userId)
+        {
+            Patient patient = await _patientRepository.GetBySpecAsync(new PatientByUserIdSpec(userId));
+            Guard.Against.Null(patient, nameof(patient));
+            return patient;
         }
 
 

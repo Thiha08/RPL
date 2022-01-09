@@ -6,13 +6,16 @@ namespace RPL.Core.Specifications.Bookings
 {
     public class BookingInformationSpec : Specification<Booking>, ISingleResultSpecification
     {
-        public BookingInformationSpec(long bookingId)
+        public BookingInformationSpec(long patiendId, long bookingId)
         {
             Query
                 .Include(x => x.Clinic)
                 .Include(x => x.Doctor)
                     .ThenInclude(y => y.DoctorSchedule)
-                .Where(x => x.Id == bookingId && x.Doctor.DoctorSchedule.Any(y => y.Id == x.DoctorScheduleId));
+                .Where(x => 
+                    x.Id == bookingId &&
+                    x.PatientId == patiendId &&
+                    x.Doctor.DoctorSchedule.Any(y => y.Id == x.DoctorScheduleId));
                
         }
     }

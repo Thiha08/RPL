@@ -6,12 +6,12 @@ namespace RPL.Infrastructure.Services.Interfaces
 {
     public interface IBookingService
     {
-        Task<Result<long>> CreateBookingAsync(CreateBookingDto bookingDto);
+        Task<Result<long>> CreateBookingAsync(long patientId, CreateBookingDto bookingDto);
 
-        Task<Result<BookingInformationDto>> GetBookingInformationAsync(long bookingId);
+        Task<Result<BookingInformationDto>> GetBookingInformationAsync(long patientId, long bookingId);
 
-        Task<IResult> ConfirmBookingAsync(long id, ConfirmBookingDto clinicDto);
+        Task<IResult> ConfirmBookingAsync(long patientId, ConfirmBookingDto clinicDto);
 
-        Task<IResult> CancelBookingAsync(long id, CancelBookingDto cancelBookingDto);
+        Task<IResult> CancelBookingAsync(long patientId, CancelBookingDto cancelBookingDto);
     }
 }

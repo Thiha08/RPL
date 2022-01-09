@@ -16,6 +16,8 @@ namespace RPL.Infrastructure.Services.Interfaces
 
         Task<Result<PatientDto>> GetPatientAsync(long id);
 
+        Task<Result<Patient>> GetPatientByUserIdAsync(string userId);
+
         Task<Result<IEnumerable<PatientDto>>> GetPatientsAsync();
 
         Task<IResult> UpdatePatientAsync(long id, PatientDto patientDto);
