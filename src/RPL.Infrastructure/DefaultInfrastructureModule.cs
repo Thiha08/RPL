@@ -93,6 +93,8 @@ namespace RPL.Infrastructure
             builder.RegisterType<PatientService>().As<IPatientService>().InstancePerDependency();
             builder.RegisterType<DoctorService>().As<IDoctorService>().InstancePerDependency();
             builder.RegisterType<ClinicService>().As<IClinicService>().InstancePerDependency();
+            builder.RegisterType<ClinicSearchService>().As<IClinicSearchService>().InstancePerDependency();
+            builder.RegisterType<BookingService>().As<IBookingService>().InstancePerDependency();
         }
 
         private void RegisterDevelopmentOnlyDependencies(ContainerBuilder builder)

@@ -4,7 +4,11 @@ namespace RPL.Core.DTOs
 {
     public class ClinicNearbyDto
     {
-        public long Id { get; set; }
+        public long ClinicId { get; set; }
+
+        public long DoctorId { get; set; }
+
+        public long ScheduleId { get; set; }
 
         public string ClinicName { get; set; }
 
